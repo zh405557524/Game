@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">2048</string>
+    <string name="score">score:</string>
+    <string name="begin">开始</string>
+    <string name="setting">设置</string>
+    <string name="voice">声音:</string>
+    <string name="speedAnimation">动画速度:</string>
+    <string name="startAgain">重新开始</string>
+    <string name="back">退回</string>
+</resources>

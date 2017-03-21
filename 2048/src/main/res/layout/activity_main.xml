@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/activity_main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_background"
+    tools:context="com.soul.game.MainActivity">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentStart="true"
+                  android:layout_alignParentTop="true"
+                  android:layout_marginTop="@dimen/login_marginTop"
+                  android:paddingBottom="10dp"
+                  android:orientation="vertical">
+        <ImageView
+            android:layout_width="@dimen/login_width"
+            android:layout_height="@dimen/login_height"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/login_marginBottom"
+            android:src="@drawable/new_logo"/>
+        <Button
+            android:id="@+id/bt_setting"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bt_begin_height"
+            android:layout_marginLeft="@dimen/bt_begin_ml"
+            android:layout_marginRight="@dimen/bt_begin_mr"
+            android:background="@drawable/selector_alert_bt_bg"
+            android:text="@string/setting"
+            android:textColor="@color/while1"
+            android:textSize="24sp"/>
+        <Button
+            android:layout_marginTop="15dp"
+            android:id="@+id/bt_begin"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bt_begin_height"
+            android:layout_marginLeft="@dimen/bt_begin_ml"
+            android:layout_marginRight="@dimen/bt_begin_mr"
+            android:background="@drawable/selector_button_yellow"
+            android:text="@string/begin"
+            android:textColor="@color/while1"
+            android:layout_marginBottom="10dp"
+            android:textSize="24sp"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

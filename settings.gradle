@@ -1,0 +1,1 @@
+include ':2048', ':gameLibrary', ':library', ':gametext', ':cocos2ddemo'

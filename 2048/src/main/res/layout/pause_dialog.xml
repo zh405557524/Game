@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="15dp">
+        <ImageView
+            android:id="@+id/imageView_pause_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:src="@drawable/selector_pause_setting"/>
+        <ImageView
+            android:id="@+id/imageView_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:src="@drawable/selector_pause_play"/>
+    </RelativeLayout>
+
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_centerInParent="true"
+                  android:layout_marginLeft="60dp"
+                  android:layout_marginRight="60dp"
+                  android:orientation="vertical">
+
+        <Button android:id="@+id/bt_startAgain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_alert_bt_bg"
+                android:text="@string/startAgain"
+                android:textColor="@color/while1"
+                android:textSize="24sp"/>
+        <Button
+            android:id="@+id/bt_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/selector_alert_bt_bg"
+            android:text="@string/back"
+            android:textColor="@color/while1"
+            android:textSize="24sp"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

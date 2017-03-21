@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/2048/2048.iml" filepath="$PROJECT_DIR$/2048/2048.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Game.iml" filepath="$PROJECT_DIR$/Game.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cocos2ddemo/cocos2ddemo.iml" filepath="$PROJECT_DIR$/cocos2ddemo/cocos2ddemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gameLibrary/gameLibrary.iml" filepath="$PROJECT_DIR$/gameLibrary/gameLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gametext/gametext.iml" filepath="$PROJECT_DIR$/gametext/gametext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+    </modules>
+  </component>
+</project>
