@@ -2,12 +2,27 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/2048/2048.iml" filepath="$PROJECT_DIR$/2048/2048.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Game.iml" filepath="$PROJECT_DIR$/Game.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cocos2ddemo/cocos2ddemo.iml" filepath="$PROJECT_DIR$/cocos2ddemo/cocos2ddemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gameLibrary/gameLibrary.iml" filepath="$PROJECT_DIR$/gameLibrary/gameLibrary.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gametext/gametext.iml" filepath="$PROJECT_DIR$/gametext/gametext.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Game.iml" filepath="$PROJECT_DIR$/.idea/modules/Game.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2048/Game.2048.iml" filepath="$PROJECT_DIR$/.idea/modules/2048/Game.2048.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2048/Game.2048.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/2048/Game.2048.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2048/Game.2048.main.iml" filepath="$PROJECT_DIR$/.idea/modules/2048/Game.2048.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2048/Game.2048.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/2048/Game.2048.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.iml" filepath="$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/cocos2ddemo/Game.cocos2ddemo.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLibrary/Game.gameLibrary.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.iml" filepath="$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/gametext/Game.gametext.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/Game.library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/Game.library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/Game.library.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/library/Game.library.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/Game.library.main.iml" filepath="$PROJECT_DIR$/.idea/modules/library/Game.library.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/Game.library.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/library/Game.library.unitTest.iml" />
     </modules>
   </component>
 </project>
