@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 32
+    buildToolsVersion "30.0.0"
 
     defaultConfig {
         applicationId "com.soul.cocos2ddemo"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -24,13 +24,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile files('libs/cocos2d-android.jar')
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
-    testCompile 'junit:junit:4.12'
-    compile project(':library')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/cocos2d-android.jar')
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    implementation project(':library')
 }

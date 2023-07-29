@@ -189,7 +189,7 @@ public class DemoLayer extends CCLayer {
 
     public void loadMap() {
         //1 加载地图
-        mMap = CCTMXTiledMap.tiledMap("map.tmx");
+        mMap = CCTMXTiledMap.tiledMap("map_16.tmx");
         //3 打印地图默认描点
         CGPoint anchorPoint = mMap.getAnchorPoint();
         System.out.println("anchorPoint:" + anchorPoint);

@@ -29,11 +29,11 @@ public class MapActivity extends BaseActivity {
         //3 director 常规设置
         mCcDirector.setDeviceOrientation(CCDirector.kCCDeviceOrientationLandscapeLeft);
         mCcDirector.setDisplayFPS(true);
-        mCcDirector.setScreenSize(480,320);
+        mCcDirector.setScreenSize(480, 320);
         //4 创建 CCScene
         CCScene ccScene = CCScene.node();
         //5 创建CCLayer
-        CCLayer ccLayer= new DemoLayer();
+        CCLayer ccLayer = new DemoLayer();
         //6 CCLayer添加到CCScene
 
         ccScene.addChild(ccLayer);
