@@ -1,0 +1,22 @@
+* text=auto
+
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# Treat game assets as binary. Configure Git LFS before adding large files.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.psd binary
+*.blend binary
+*.fbx binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.mp4 binary
+*.mov binary
+*.ttf binary
+*.otf binary
+

@@ -1,0 +1,53 @@
+# macOS / Windows
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.iml
+*.suo
+*.user
+*.userprefs
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.local
+local.properties
+
+# Logs, caches, and temporary files
+*.log
+*.tmp
+*.temp
+*.cache
+.cache/
+tmp/
+temp/
+
+# Local builds and packaged releases
+build/
+dist/
+builds/*
+!builds/.gitkeep
+
+# Unity generated directories
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# Unreal Engine generated directories
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+
+# Godot generated directories
+.godot/
+
