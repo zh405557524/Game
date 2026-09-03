@@ -2,3 +2,8 @@
 
 放置不适合直接位于引擎工程内的集成测试、端到端测试、测试数据与自动化检查。引擎原生单元测试应优先跟随 `game/` 内对应模块。
 
+地图美术五阶段门禁：
+
+```bash
+node --test tests/map_art/validate_pipeline.test.mjs
+```

@@ -1,0 +1,39 @@
+@import "@fontsource/noto-serif-sc/400.css";
+@import "@fontsource/noto-serif-sc/600.css";
+@import "@fontsource/noto-serif-sc/700.css";
+@import "@fontsource/ma-shan-zheng/400.css";
+
+:root {
+  color: #25241f;
+  background: #d8cfb8;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1180px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid #8f3f2e;
+  outline-offset: 2px;
+}

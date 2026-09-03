@@ -1,0 +1,19 @@
+{
+  "name": "ProjectRealm.Infrastructure.Sqlite",
+  "rootNamespace": "ProjectRealm.Infrastructure.Sqlite",
+  "references": [
+    "ProjectRealm.Application",
+    "ProjectRealm.Domain",
+    "ProjectRealm.Ports",
+    "Gilzoide.SqliteNet"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

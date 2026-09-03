@@ -1,0 +1,10 @@
+{
+  "name": "ProjectRealm.Tests.EditorTools",
+  "rootNamespace": "ProjectRealm.Tests.EditorTools",
+  "references": ["ProjectRealm.EditorTools", "ProjectRealm.Presentation"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "noEngineReferences": false
+}

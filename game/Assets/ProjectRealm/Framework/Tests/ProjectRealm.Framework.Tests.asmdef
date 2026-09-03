@@ -1,0 +1,28 @@
+{
+  "name": "ProjectRealm.Framework.Tests",
+  "rootNamespace": "ProjectRealm.Framework.Tests",
+  "references": [
+    "ProjectRealm.Application",
+    "ProjectRealm.Domain",
+    "ProjectRealm.Ports",
+    "ProjectRealm.Infrastructure.Sqlite",
+    "ProjectRealm.UnityFramework",
+    "Gilzoide.SqliteNet"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

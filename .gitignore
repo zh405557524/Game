@@ -6,6 +6,7 @@ Desktop.ini
 # Editors and IDEs
 .idea/
 .vscode/
+node_modules/
 *.iml
 *.suo
 *.user
@@ -26,6 +27,8 @@ local.properties
 .cache/
 tmp/
 temp/
+__pycache__/
+*.py[cod]
 
 # Local builds and packaged releases
 build/
@@ -51,3 +54,73 @@ Saved/
 # Godot generated directories
 .godot/
 
+# Rebuildable Project Realm settlement catalog (v0.3)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/6.县内区域与村庄/generated/
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/6.县内区域与村庄/game_world_1628_v0.3.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/6.县内区域与村庄/.generated_v0.3.tmp/
+
+# Rebuildable Project Realm culture/person catalogs (v0.4)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/7.县级文化家族乡绅教育与人物/generated/
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/7.县级文化家族乡绅教育与人物/game_world_1628_v0.4.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/7.县级文化家族乡绅教育与人物/.generated_v0.4.tmp/
+
+# On-demand Project Realm village people materialization (v0.5)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/8.村庄家庭与人物关系/generated/
+
+# Rebuildable Project Realm social structure and all-scene catalogs (v0.6)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/9.教育职业身份与社会阶层/generated/
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/9.教育职业身份与社会阶层/game_world_1628_v0.6.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/9.教育职业身份与社会阶层/county_occupation_quota_v0.6.csv
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/9.教育职业身份与社会阶层/.generated_v0.6.tmp/
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/9.教育职业身份与社会阶层/*.sqlite.tmp
+
+# Rebuildable Project Realm local divisions and settlement membership (v0.7)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/10.乡镇基层区划与计算分区/generated/
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/10.乡镇基层区划与计算分区/game_world_1628_v0.7.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/10.乡镇基层区划与计算分区/*.sqlite.tmp
+
+# Rebuildable compact Project Realm runtime world snapshot (v0.8)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/11.运行数据库瘦身/game_world_1628_v0.8.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/11.运行数据库瘦身/*.sqlite.tmp
+
+# Rebuildable index-optimized Project Realm runtime world snapshot (v0.9)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/12.运行数据库索引优化/game_world_1628_v0.9.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/12.运行数据库索引优化/*.sqlite.tmp
+
+# Rebuildable five-block Project Realm simulation foundation snapshot (v1.0)
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/13.模拟基础规则/game_world_1628_v1.0.sqlite
+docs/90_资料与归档/01_崇祯元年历史资料/data/1628/13.模拟基础规则/*.sqlite.tmp*
+
+# Rebuildable Project Realm development Definition database
+game/Assets/ProjectRealm/Content/Definitions/Development/Resources/realm_definition_ming1628_dev_v1.sqlite
+game/Assets/ProjectRealm/Content/Definitions/Development/Resources/realm_definition_ming1628_dev_v1.sqlite.meta
+
+# Unity/Rider generated solution files
+game/*.csproj
+game/*.sln
+
+# Local Unity art, scenes, and generated content (not stored on GitHub)
+game/Assets/InputSystem_Actions.inputactions
+game/Assets/InputSystem_Actions.inputactions.meta
+game/Assets/Scenes/
+game/Assets/Scenes.meta
+game/Assets/Settings/
+game/Assets/Settings.meta
+game/Assets/ProjectRealm/Content/Maps/
+game/Assets/ProjectRealm/Content/Maps.meta
+game/Assets/ProjectRealm/Development/
+game/Assets/ProjectRealm/Development.meta
+game/Assets/ProjectRealm/Development/Catalog/
+game/Assets/ProjectRealm/Development/Generated/
+game/Assets/ProjectRealm/Development/TestData/
+game/Assets/ProjectRealm/Presentation/Map/Art/
+game/Assets/ProjectRealm/Presentation/Map/Art.meta
+game/Assets/ProjectRealm/Presentation/Map/Materials/
+game/Assets/ProjectRealm/Presentation/Map/Materials.meta
+game/Assets/ProjectRealm/Presentation/Map/Shaders/
+game/Assets/ProjectRealm/Presentation/Map/Shaders.meta
+
+# Local prototype screenshots, artwork, and exported data
+prototypes/project-realm-desktop-ui/public/assets/
+prototypes/project-realm-desktop-ui/qa/
+prototypes/project-realm-desktop-ui/src/data/

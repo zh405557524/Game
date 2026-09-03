@@ -1,0 +1,21 @@
+{
+  "name": "ProjectRealm.Framework.Editor",
+  "rootNamespace": "ProjectRealm.Framework.Editor",
+  "references": [
+    "ProjectRealm.Application",
+    "ProjectRealm.Domain",
+    "ProjectRealm.UnityFramework",
+    "Gilzoide.SqliteNet"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

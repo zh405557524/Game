@@ -1,0 +1,29 @@
+{
+  "name": "ProjectRealm.Tests.Integration",
+  "rootNamespace": "ProjectRealm.Tests.Integration",
+  "references": [
+    "ProjectRealm.Application",
+    "ProjectRealm.Domain",
+    "ProjectRealm.Infrastructure",
+    "ProjectRealm.Ports",
+    "ProjectRealm.Presentation",
+    "Unity.InputSystem",
+    "Unity.InputSystem.TestFramework"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

@@ -1,0 +1,19 @@
+{
+  "name": "ProjectRealm.Presentation",
+  "rootNamespace": "ProjectRealm.Presentation",
+  "references": [
+    "ProjectRealm.Application",
+    "ProjectRealm.Domain",
+    "ProjectRealm.Ports",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

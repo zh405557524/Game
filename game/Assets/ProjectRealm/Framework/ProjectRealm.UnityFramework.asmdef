@@ -1,0 +1,20 @@
+{
+  "name": "ProjectRealm.UnityFramework",
+  "rootNamespace": "ProjectRealm.UnityFramework",
+  "references": [
+    "ProjectRealm.Application",
+    "ProjectRealm.Domain",
+    "ProjectRealm.Ports",
+    "ProjectRealm.Infrastructure.Sqlite",
+    "Gilzoide.SqliteNet"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

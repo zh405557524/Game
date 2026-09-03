@@ -1,0 +1,10 @@
+{
+  "name": "com.projectrealm.simulation",
+  "version": "0.1.0",
+  "displayName": "Project Realm Simulation Core",
+  "description": "Deterministic, Unity-independent domain and application core for Project Realm.",
+  "unity": "6000.5",
+  "author": {
+    "name": "Project Realm"
+  }
+}
