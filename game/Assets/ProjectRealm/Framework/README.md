@@ -1,5 +1,7 @@
 # Project Realm simulation framework
 
+Chinese architecture and code-reading guide: [`../../../FRAMEWORK_README.md`](../../../FRAMEWORK_README.md)
+
 This folder contains the Unity-facing host and Editor tooling for the deterministic simulation core in
 `Packages/com.projectrealm.simulation`.
 

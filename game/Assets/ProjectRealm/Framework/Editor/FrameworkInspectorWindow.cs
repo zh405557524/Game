@@ -12,6 +12,9 @@ using UnityEngine;
 
 namespace ProjectRealm.Framework.Editor
 {
+    /// <summary>
+    /// 世界模拟只读调试窗口。绘制和切换页签不推进时间；只有工具栏中的显式动作会调用 Host。
+    /// </summary>
     public sealed class FrameworkInspectorWindow : EditorWindow
     {
         private static readonly string[] Tabs =
@@ -68,6 +71,7 @@ namespace ProjectRealm.Framework.Editor
             }
 
             var runtime = host.Runtime;
+            // 每次重绘重新创建只读投影，不缓存或修改权威运行时对象。
             var diagnostics = new SimulationDiagnosticsQuery().Query(runtime, _search, _page, PageSize);
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             switch (_selectedTab)

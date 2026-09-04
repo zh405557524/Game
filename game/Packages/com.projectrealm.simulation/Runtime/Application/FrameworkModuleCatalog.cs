@@ -7,6 +7,10 @@ using ProjectRealm.Domain;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>
+    /// 从架构文档的权威模块表构造机器可校验目录。这里保存模块元数据，
+    /// 不为尚未实现的领域规则创建近百个空类型。
+    /// </summary>
     public static class FrameworkModuleCatalog
     {
         public const string Version = "framework-module-catalog-v1";
@@ -145,10 +149,12 @@ namespace ProjectRealm.Application
 
         public static IReadOnlyList<string> AggregateCountyNames => new ReadOnlyCollection<string>(AggregateCountySourceNames);
 
+        /// <summary>创建包含全部规范模块及两个非权威兼容别名的目录。</summary>
         public static ModuleCatalog Create()
         {
             var definitions = CanonicalSourceNames.Select(CreateDefinition).ToList();
             var definitionsByName = definitions.ToDictionary(definition => definition.SourceName, StringComparer.Ordinal);
+            // 旧名称只解析到细分模块，不能成为第二个 authoritative provider。
             var aliases = new Dictionary<string, StableId>(StringComparer.Ordinal)
             {
                 { "PersonModule", definitionsByName["PersonIdentityModule"].DefinitionId },
@@ -157,6 +163,7 @@ namespace ProjectRealm.Application
             return new ModuleCatalog(definitions, aliases);
         }
 
+        /// <summary>把规范模块名稳定映射成版本化定义 ID。</summary>
         public static StableId DefinitionIdFor(string sourceName)
         {
             return new StableId("module." + ToKebabCase(sourceName.Substring(0, sourceName.Length - "Module".Length)) + ".v1");
@@ -168,6 +175,7 @@ namespace ProjectRealm.Application
             var definitionId = new StableId("module." + stem + ".v1");
             var capabilityId = new StableId("capability." + stem + ".scaffold.v1");
             var authorityKey = new StableId("authority." + stem);
+            // 首版统一声明 Scaffold；执行器会明确报告 Unavailable，不生成伪业务数据。
             return new ModuleDefinition(
                 definitionId,
                 sourceName,

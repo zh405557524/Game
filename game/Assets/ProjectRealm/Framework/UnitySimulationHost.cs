@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace ProjectRealm.UnityFramework
 {
+    /// <summary>
+    /// Unity 生命周期适配器。它只响应显式按钮或方法调用，不在 Update 中推进权威世界。
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class UnitySimulationHost : MonoBehaviour
     {
@@ -51,6 +54,7 @@ namespace ProjectRealm.UnityFramework
             }
         }
 
+        /// <summary>从开发 Definition 创建一个内存中的新世界。</summary>
         public void CreateDevelopmentWorld()
         {
             Execute(() =>
@@ -63,6 +67,7 @@ namespace ProjectRealm.UnityFramework
             });
         }
 
+        /// <summary>从 persistentDataPath 读取当前配置的开发存档。</summary>
         public void LoadDevelopmentWorld()
         {
             Execute(() =>
@@ -72,11 +77,13 @@ namespace ProjectRealm.UnityFramework
             });
         }
 
+        /// <summary>保存最近闭合 Tick；不会隐式推进时间。</summary>
         public void SaveDevelopmentWorld()
         {
             Execute(() => RequireRuntime().Save());
         }
 
+        /// <summary>显式推进日、月、季或年。</summary>
         public WorldTickResult Step(AdvanceUnit unit)
         {
             WorldTickResult result = null;
@@ -84,6 +91,7 @@ namespace ProjectRealm.UnityFramework
             return result;
         }
 
+        /// <summary>导出只读文本诊断，不改变状态散列。</summary>
         public string ExportDiagnostics()
         {
             var runtime = RequireRuntime();

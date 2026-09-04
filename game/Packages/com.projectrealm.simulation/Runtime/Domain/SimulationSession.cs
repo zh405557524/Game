@@ -2,6 +2,9 @@ using System;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>
+    /// 保留旧公开 API 的兼容外壳。新世界由 WorldRuntime 驱动，旧调用仍可使用 AdvanceDay。
+    /// </summary>
     public sealed class SimulationSession
     {
         private readonly ISimulationSessionRuntime _runtime;
@@ -34,6 +37,7 @@ namespace ProjectRealm.Domain
             _runtime.AdvanceOneDay();
         }
 
+        // 仅为没有 Application 层依赖的旧单元测试保留；不代表完整世界模拟。
         private sealed class LegacySessionRuntime : ISimulationSessionRuntime
         {
             public long ElapsedDays { get; private set; }

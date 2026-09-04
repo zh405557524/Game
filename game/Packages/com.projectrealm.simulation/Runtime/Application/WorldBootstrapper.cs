@@ -4,6 +4,10 @@ using ProjectRealm.Ports;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>
+    /// 新建和读取世界的应用服务。旧构造函数与旧 StartNewWorld API 被保留，
+    /// 新调用方应提供 Definition Store 与 Save Store。
+    /// </summary>
     public sealed class WorldBootstrapper
     {
         private readonly IWorldDefinitionReader _worldDefinitions;
@@ -33,6 +37,7 @@ namespace ProjectRealm.Application
             _diagnostics = diagnostics ?? new NullSimulationDiagnosticsSink();
         }
 
+        /// <summary>兼容旧公开 API，并把实际推进委托给新的 WorldRuntime。</summary>
         public SimulationSession StartNewWorld(StableId worldId, WorldSeed worldSeed)
         {
             if (!_worldDefinitions.ContainsWorld(worldId))
@@ -52,6 +57,7 @@ namespace ProjectRealm.Application
             return new SimulationSession(worldId, worldSeed, runtime);
         }
 
+        /// <summary>从只读 Definition 创建尚未保存的新世界。</summary>
         public WorldRuntime StartNewWorld(WorldBootstrapRequest request)
         {
             if (request == null)
@@ -82,6 +88,7 @@ namespace ProjectRealm.Application
                 _diagnostics);
         }
 
+        /// <summary>读取 Save，并用匹配的 Definition 验证后恢复运行时。</summary>
         public WorldRuntime LoadWorld(LoadWorldRequest request)
         {
             if (request == null)

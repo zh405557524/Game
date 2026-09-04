@@ -8,6 +8,10 @@ using SQLite;
 
 namespace ProjectRealm.Infrastructure.Sqlite
 {
+    /// <summary>
+    /// 每个存档独立一个 SQLite 数据库。写入使用 WAL、FULL synchronous 和单事务快照；
+    /// Definition 数据库始终与 Save 数据库分离。
+    /// </summary>
     public sealed class SqliteSaveGameStore : ISaveGameStore
     {
         public const int SaveSchemaVersion = 1;
@@ -24,11 +28,13 @@ namespace ProjectRealm.Infrastructure.Sqlite
             _saveRoot = Path.Combine(persistentDataPath, "ProjectRealm", "Saves");
         }
 
+        /// <summary>判断指定存档文件是否存在。</summary>
         public bool Exists(StableId saveId)
         {
             return File.Exists(GetSavePath(saveId));
         }
 
+        /// <summary>在单个 SQLite 事务中写入完整闭合世界快照。</summary>
         public void Save(WorldSaveData saveData)
         {
             if (saveData == null)
@@ -41,10 +47,12 @@ namespace ProjectRealm.Infrastructure.Sqlite
             using (var connection = OpenWritable(path))
             {
                 InitializeSchema(connection);
+                // 任一表写入失败都会由 SQLite 回滚整个事务。
                 connection.RunInTransaction(() => WriteSnapshot(connection, saveData));
             }
         }
 
+        /// <summary>校验 schema 与 integrity_check 后读取存档。</summary>
         public WorldSaveData Load(StableId saveId)
         {
             var path = GetSavePath(saveId);
@@ -65,6 +73,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
             }
         }
 
+        /// <summary>使用 SQLite backup API 创建迁移前副本，不直接复制打开中的 WAL 文件。</summary>
         public void BackupBeforeMigration(StableId saveId, string migrationId)
         {
             if (string.IsNullOrWhiteSpace(migrationId))
@@ -90,6 +99,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
             }
         }
 
+        /// <summary>生成经过路径片段清理的独立存档路径。</summary>
         public string GetSavePath(StableId saveId)
         {
             SimulationNode.RequireId(saveId, nameof(saveId));
@@ -150,6 +160,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
             WriteResults(connection, save);
             WriteCheckpoints(connection, save);
 
+            // manifest（含当前检查点指针）最后写入；事务外永远看不到半套新快照。
             var ruleset = save.Manifest.Ruleset;
             connection.Execute(
                 "INSERT INTO save_manifest VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -607,6 +618,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
                 return requested.CheckpointId;
             }
 
+            // 指针缺失时只回退到最近的完整闭合检查点，不猜测或合成状态。
             var fallback = checkpoints.OrderByDescending(item => item.TickId).FirstOrDefault();
             if (fallback == null)
             {

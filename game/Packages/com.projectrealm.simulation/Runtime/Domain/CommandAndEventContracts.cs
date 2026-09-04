@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>命令从草拟、校验、预留、执行到结算的完整状态机。</summary>
     public enum CommandStatus
     {
         Drafted,
@@ -27,6 +28,7 @@ namespace ProjectRealm.Domain
         Suspended
     }
 
+    /// <summary>跨层传递的不可变命令信封，包含权限作用域和幂等键。</summary>
     public sealed class CommandEnvelope
     {
         public CommandEnvelope(
@@ -69,6 +71,7 @@ namespace ProjectRealm.Domain
         public TickId SubmittedTick { get; }
     }
 
+    /// <summary>一次命令状态迁移的审计事件。</summary>
     public sealed class CommandStatusEvent
     {
         public CommandStatusEvent(
@@ -97,6 +100,7 @@ namespace ProjectRealm.Domain
         public string ReasonCode { get; }
     }
 
+    /// <summary>命令在指定权限作用域中的资源预留记录。</summary>
     public sealed class ResourceReservation
     {
         public ResourceReservation(
@@ -136,6 +140,7 @@ namespace ProjectRealm.Domain
         public bool Committed { get; }
     }
 
+    /// <summary>命令执行端返回的稳定结果。</summary>
     public sealed class CommandExecutionResult
     {
         public CommandExecutionResult(StableId commandInstanceId, CommandStatus status, string reasonCode)
@@ -151,6 +156,7 @@ namespace ProjectRealm.Domain
         public string ReasonCode { get; }
     }
 
+    /// <summary>事实提交后才能发布的领域事件信封。</summary>
     public sealed class EventEnvelope
     {
         public EventEnvelope(
@@ -177,6 +183,7 @@ namespace ProjectRealm.Domain
         public byte[] Payload { get; }
     }
 
+    /// <summary>玩家意图 DTO；意图必须先转成命令，不能直接修改权威状态。</summary>
     public sealed class PlayerIntent
     {
         public PlayerIntent(StableId actorId, StableId intentDefinitionId, StableId targetId, byte[] payload)
@@ -196,6 +203,7 @@ namespace ProjectRealm.Domain
         public byte[] Payload { get; }
     }
 
+    /// <summary>命令当前状态及全部状态迁移历史。</summary>
     public sealed class CommandRecord
     {
         private readonly List<CommandStatusEvent> _statusEvents;
@@ -216,6 +224,7 @@ namespace ProjectRealm.Domain
             return new CommandRecord(Envelope, Status, _statusEvents);
         }
 
+        /// <summary>执行合法状态迁移并附加确定性事件 ID。</summary>
         public CommandStatusEvent TransitionTo(CommandStatus next, TickId tickId, string reasonCode = null)
         {
             if (!IsAllowed(Status, next))

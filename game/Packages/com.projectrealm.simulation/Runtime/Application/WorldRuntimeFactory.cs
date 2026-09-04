@@ -6,6 +6,7 @@ using ProjectRealm.Ports;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>新建世界所需的稳定标识和随机种子。</summary>
     public sealed class WorldBootstrapRequest
     {
         public WorldBootstrapRequest(StableId saveId, StableId worldId, WorldSeed worldSeed)
@@ -22,6 +23,7 @@ namespace ProjectRealm.Application
         public WorldSeed WorldSeed { get; }
     }
 
+    /// <summary>读取已有世界时使用的请求对象。</summary>
     public sealed class LoadWorldRequest
     {
         public LoadWorldRequest(StableId saveId)
@@ -33,8 +35,10 @@ namespace ProjectRealm.Application
         public StableId SaveId { get; }
     }
 
+    /// <summary>把 Definition 或 Save DTO 组装成可运行的 <see cref="WorldRuntime"/>。</summary>
     internal static class WorldRuntimeFactory
     {
+        /// <summary>只初始化拓扑、模块空状态和初始检查点，不把历史聚合行伪装成当前事实。</summary>
         public static WorldRuntime CreateNew(
             WorldBootstrapRequest request,
             WorldDefinition definition,
@@ -69,6 +73,7 @@ namespace ProjectRealm.Application
                 commandProcessor: new CommandProcessor(true, diagnostics));
         }
 
+        /// <summary>验证 Definition 内容散列和检查点散列后恢复世界。</summary>
         public static WorldRuntime Restore(
             WorldSaveData save,
             WorldDefinition definition,
@@ -81,6 +86,7 @@ namespace ProjectRealm.Application
                 throw new ArgumentNullException(nameof(save));
             }
 
+            // Definition 是存档的外部依赖；内容散列不一致时禁止带病续跑。
             if (!save.Manifest.WorldId.Equals(definition.WorldId) ||
                 !string.Equals(save.Manifest.Ruleset.DefinitionContentHash, definition.Manifest.DefinitionContentHash, StringComparison.Ordinal))
             {
@@ -99,6 +105,7 @@ namespace ProjectRealm.Application
                 save.Topology,
                 registry,
                 save.CommittedState);
+            // 存档载荷必须能重算出当前闭合检查点散列。
             if (!actualStateHash.Equals(currentCheckpoint.StateHash))
             {
                 throw new InvalidOperationException("The save state does not match its current closed-tick checkpoint hash.");
@@ -125,6 +132,7 @@ namespace ProjectRealm.Application
                 save.NodeSnapshots);
         }
 
+        /// <summary>仅供旧 API 兼容测试使用的最小 Definition。</summary>
         public static WorldDefinition CreateMinimalDefinition(StableId worldId)
         {
             var worldNode = new RegionNode(worldId, SimulationNodeKind.World, worldId.Value);

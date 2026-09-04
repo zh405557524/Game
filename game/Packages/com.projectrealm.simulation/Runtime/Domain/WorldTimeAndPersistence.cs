@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>世界 Tick 的固定执行协议；数值用于稳定排序，不应随意重排。</summary>
     public enum WorldExecutionStage
     {
         S00FreezeTopology = 0,
@@ -23,6 +24,7 @@ namespace ProjectRealm.Domain
         S130AuditAndCheckpoint = 130
     }
 
+    /// <summary>一个日 Tick 同时闭合了哪些经济历周期。</summary>
     [Flags]
     public enum PeriodCloseFlags
     {
@@ -33,6 +35,7 @@ namespace ProjectRealm.Domain
         Year = 8
     }
 
+    /// <summary>应用层可请求的显式推进单位。</summary>
     public enum AdvanceUnit
     {
         Day,
@@ -41,6 +44,7 @@ namespace ProjectRealm.Domain
         Year
     }
 
+    /// <summary>世界内单调递增的 Tick 序号。</summary>
     public readonly struct TickId : IEquatable<TickId>, IComparable<TickId>
     {
         public TickId(long value)
@@ -66,6 +70,9 @@ namespace ProjectRealm.Domain
         public override string ToString() => Value.ToString();
     }
 
+    /// <summary>
+    /// 不可变世界时钟。首版采用 12 月、每月 30 日的经济历，后续历法通过版本 ID 扩展。
+    /// </summary>
     public sealed class WorldClock
     {
         public const int DefaultMonthCount = 12;
@@ -122,6 +129,7 @@ namespace ProjectRealm.Domain
 
         public long LastYearCloseTick { get; }
 
+        /// <summary>计算下一日候选时钟及周期闭合标记，不修改当前实例。</summary>
         public WorldClockAdvance NextDay()
         {
             var nextTick = checked(TickSequence + 1);
@@ -163,6 +171,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>一次时钟计算的不可变返回值。</summary>
     public sealed class WorldClockAdvance
     {
         public WorldClockAdvance(WorldClock clock, PeriodCloseFlags closeFlags)
@@ -176,6 +185,9 @@ namespace ProjectRealm.Domain
         public PeriodCloseFlags CloseFlags { get; }
     }
 
+    /// <summary>
+    /// 约束 Definition、模块目录、状态载荷、初始化算法和随机算法的兼容性清单。
+    /// </summary>
     public sealed class RulesetManifest
     {
         public RulesetManifest(
@@ -221,6 +233,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>规范序列化后的 SHA-256 世界状态指纹。</summary>
     public readonly struct StateHash : IEquatable<StateHash>
     {
         public StateHash(string sha256)
@@ -244,6 +257,9 @@ namespace ProjectRealm.Domain
         public override string ToString() => Sha256 ?? string.Empty;
     }
 
+    /// <summary>
+    /// 确定性随机流的完整寻址键。相同世界、Tick、节点、模块、用途和实体得到相同随机序列。
+    /// </summary>
     public sealed class RandomStreamDescriptor
     {
         public RandomStreamDescriptor(
@@ -281,6 +297,7 @@ namespace ProjectRealm.Domain
         public string AlgorithmVersion { get; }
     }
 
+    /// <summary>只指向闭合 Tick 的可验证检查点。</summary>
     public sealed class WorldCheckpoint
     {
         public WorldCheckpoint(StableId checkpointId, TickId tickId, StateHash stateHash, DateTime createdUtc)
@@ -303,6 +320,7 @@ namespace ProjectRealm.Domain
         public DateTime CreatedUtc { get; }
     }
 
+    /// <summary>从只读 Definition 数据库加载的世界拓扑、规则清单和模块组合。</summary>
     public sealed class WorldDefinition
     {
         public WorldDefinition(
@@ -327,6 +345,7 @@ namespace ProjectRealm.Domain
         public IReadOnlyList<NodeModuleComposition> ModuleCompositions { get; }
     }
 
+    /// <summary>旧 SimulationSession 与新运行时之间的最小兼容接口。</summary>
     public interface ISimulationSessionRuntime
     {
         long ElapsedDays { get; }

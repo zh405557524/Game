@@ -9,6 +9,10 @@ using UnityEngine;
 
 namespace ProjectRealm.UnityFramework
 {
+    /// <summary>
+    /// 构建产物中的显式冒烟入口。只有传入专用命令行参数时才运行，
+    /// 用隔离目录验证 Definition 加载、Tick、保存、重载与散列一致性。
+    /// </summary>
     public static class FrameworkPlayerSmokeRunner
     {
         private const string ResultArgument = "-projectRealmFrameworkSmokeResult";

@@ -7,6 +7,9 @@ using ProjectRealm.Ports;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>
+    /// 一个完整日 Tick 成功后的候选提交包。失败时仍返回原时钟、原状态与原命令处理器。
+    /// </summary>
     public sealed class TickExecutionCommit
     {
         public TickExecutionCommit(
@@ -30,8 +33,12 @@ namespace ProjectRealm.Application
         public WorldTickResult Result { get; }
     }
 
+    /// <summary>
+    /// 按固定顺序调度 14 个世界执行阶段，并负责 Working State 的提交或整 Tick 回滚。
+    /// </summary>
     public sealed class TickCoordinator
     {
+        // 阶段枚举值就是协议顺序；排序后执行可避免注册顺序影响确定性。
         private static readonly IReadOnlyList<WorldExecutionStage> OrderedStages = new ReadOnlyCollection<WorldExecutionStage>(
             Enum.GetValues(typeof(WorldExecutionStage)).Cast<WorldExecutionStage>().OrderBy(stage => (int)stage).ToList());
 
@@ -44,6 +51,10 @@ namespace ProjectRealm.Application
             _diagnostics = diagnostics ?? new NullSimulationDiagnosticsSink();
         }
 
+        /// <summary>
+        /// 执行一个日 Tick。模块异常、失败结果或校验异常都会进入 catch 分支，
+        /// 丢弃 Working State 与命令副本，并返回未提交结果。
+        /// </summary>
         public TickExecutionCommit ExecuteDay(
             StableId worldId,
             WorldSeed worldSeed,
@@ -59,12 +70,15 @@ namespace ProjectRealm.Application
                 throw new ArgumentNullException(nameof(topology));
             }
 
+            // 先计算候选时钟；真正提交前 currentClock 仍是调用方持有的旧对象。
             var advance = currentClock.NextDay();
             var tickId = new TickId(advance.Clock.TickSequence);
             var workingState = currentState.BeginWorkingState();
+            // 命令状态机也参与事务：失败 Tick 不得留下已校验或已预留的命令。
             var transactionalCommands = currentCommands.Clone();
             var stages = new List<StageExecutionRecord>();
             var moduleResults = new List<ModuleResult>();
+            // S00 的拓扑冻结结果在整个 Tick 内复用，模块不能边执行边改节点集合。
             var snapshot = new TickTopologySnapshot(
                 tickId,
                 topology.Geography.Nodes.Select(node => node.NodeId).Concat(topology.Factions.Nodes.Select(node => node.NodeId)),
@@ -89,6 +103,7 @@ namespace ProjectRealm.Application
                     _diagnostics.RecordStage(tickId, stageRecord);
                 }
 
+                // 14 个阶段全部成功后才把 Working State 固化并计算闭合散列。
                 var committedState = workingState.Commit();
                 var stateHash = DeterministicStateHasher.Compute(worldId, worldSeed, advance.Clock, topology, registry, committedState);
                 var nodeResults = BuildNodeResults(topology, tickId, advance.CloseFlags, stateHash, moduleResults);
@@ -115,6 +130,7 @@ namespace ProjectRealm.Application
             }
             catch (Exception exception)
             {
+                // 回滚只影响候选对象；返回的时钟、状态与命令仍指向调用前版本。
                 workingState.Rollback();
                 var stateHash = DeterministicStateHasher.Compute(worldId, worldSeed, currentClock, topology, registry, currentState);
                 var failedStage = OrderedStages.FirstOrDefault(stage => stages.All(record => record.Stage != stage));
@@ -147,6 +163,7 @@ namespace ProjectRealm.Application
             ICollection<ModuleResult> moduleResults)
         {
             var executionCount = 0;
+            // 命令协议固定占用 S80-S110；模块执行仍按同一阶段规则随后运行。
             if (stage == WorldExecutionStage.S80CommandValidation)
             {
                 executionCount += commands.ValidatePending(tickId);
@@ -164,6 +181,7 @@ namespace ProjectRealm.Application
                 executionCount += commands.ExecuteDispatched(tickId);
             }
 
+            // Registry 已按节点和定义 ID 排序，因此模块遍历顺序可复现。
             foreach (var instance in registry.Instances)
             {
                 if (instance.LifecycleState != ModuleLifecycleState.Active && instance.LifecycleState != ModuleLifecycleState.Degraded)

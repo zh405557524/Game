@@ -6,6 +6,7 @@ using ProjectRealm.Domain;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>Framework Inspector 使用的不可变诊断投影。</summary>
     public sealed class SimulationDiagnosticsSnapshot
     {
         public SimulationDiagnosticsSnapshot(
@@ -44,8 +45,12 @@ namespace ProjectRealm.Application
         public WorldTickResult LatestTick { get; }
     }
 
+    /// <summary>
+    /// 只读查询世界运行状态。查询不会推进时间、修改状态或消耗随机流。
+    /// </summary>
     public sealed class SimulationDiagnosticsQuery
     {
+        /// <summary>按同一搜索词分别分页节点和模块，单页最多返回 500 项。</summary>
         public SimulationDiagnosticsSnapshot Query(WorldRuntime runtime, string search = null, int page = 0, int pageSize = 50)
         {
             if (runtime == null)

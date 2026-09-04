@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>存档身份、规则兼容信息和当前检查点指针。</summary>
     public sealed class WorldSaveManifest
     {
         public WorldSaveManifest(
@@ -36,6 +37,9 @@ namespace ProjectRealm.Domain
         public DateTime UpdatedUtc { get; }
     }
 
+    /// <summary>
+    /// Application 与持久化适配器之间的完整存档 DTO；不包含 SQLite 或 Unity 类型。
+    /// </summary>
     public sealed class WorldSaveData
     {
         public WorldSaveData(

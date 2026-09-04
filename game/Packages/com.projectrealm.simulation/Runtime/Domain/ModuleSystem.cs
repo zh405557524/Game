@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>模块实例从注册到移除的受控生命周期。</summary>
     public enum ModuleLifecycleState
     {
         Registered,
@@ -17,6 +18,7 @@ namespace ProjectRealm.Domain
         Failed
     }
 
+    /// <summary>区分脚手架、试验实现和生产实现，避免把空跑模块误认为玩法完成。</summary>
     public enum ModuleImplementationTier
     {
         Scaffold,
@@ -24,6 +26,7 @@ namespace ProjectRealm.Domain
         Production
     }
 
+    /// <summary>模块对某能力是权威提供者、贡献者还是只读观察者。</summary>
     public enum CapabilityAuthorityMode
     {
         Authoritative,
@@ -31,6 +34,7 @@ namespace ProjectRealm.Domain
         Observer
     }
 
+    /// <summary>模块能力及其 authority key 的声明。</summary>
     public sealed class CapabilityContract
     {
         public CapabilityContract(
@@ -53,6 +57,9 @@ namespace ProjectRealm.Domain
         public bool Required { get; }
     }
 
+    /// <summary>
+    /// 目录层模块定义，包含版本、能力、阶段和依赖；不保存节点运行状态。
+    /// </summary>
     public sealed class ModuleDefinition
     {
         public ModuleDefinition(
@@ -134,6 +141,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>Definition 数据库中“节点加载哪个模块定义”的组合行。</summary>
     public sealed class NodeModuleComposition
     {
         public NodeModuleComposition(StableId nodeId, StableId moduleDefinitionId)
@@ -148,6 +156,7 @@ namespace ProjectRealm.Domain
         public StableId ModuleDefinitionId { get; }
     }
 
+    /// <summary>某个模块定义在具体世界节点上的运行实例。</summary>
     public sealed class ModuleInstance
     {
         public ModuleInstance(
@@ -170,6 +179,7 @@ namespace ProjectRealm.Domain
         public StableId NodeId { get; }
         public ModuleLifecycleState LifecycleState { get; private set; }
 
+        /// <summary>只允许通过安全状态边迁移，非法跳转立即失败。</summary>
         public void TransitionTo(ModuleLifecycleState next)
         {
             if (!IsValidTransition(LifecycleState, next))
@@ -207,6 +217,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>模块定义与兼容别名的只读目录，并校验依赖存在性和环。</summary>
     public sealed class ModuleCatalog
     {
         private readonly Dictionary<StableId, ModuleDefinition> _definitions;
@@ -319,6 +330,9 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>
+    /// 当前世界的模块实例表。构造时校验节点内硬依赖和唯一权威提供者约束。
+    /// </summary>
     public sealed class ModuleRegistry
     {
         private readonly ModuleCatalog _catalog;
@@ -386,6 +400,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>S00 冻结后的节点和模块 ID 快照。</summary>
     public sealed class TickTopologySnapshot
     {
         public TickTopologySnapshot(TickId tickId, IEnumerable<StableId> nodeIds, IEnumerable<StableId> moduleInstanceIds)
@@ -402,6 +417,7 @@ namespace ProjectRealm.Domain
         public IReadOnlyList<StableId> ModuleInstanceIds { get; }
     }
 
+    /// <summary>传给模块执行器的单阶段上下文；唯一可写入口是 WorkingState。</summary>
     public sealed class ModuleExecutionContext
     {
         public ModuleExecutionContext(
@@ -431,6 +447,7 @@ namespace ProjectRealm.Domain
         public TickTopologySnapshot TopologySnapshot { get; }
     }
 
+    /// <summary>模块执行器契约。失败结果会触发整 Tick 回滚。</summary>
     public interface IModuleExecutor
     {
         ModuleResult Execute(ModuleExecutionContext context);

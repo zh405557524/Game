@@ -8,6 +8,10 @@ using SQLite;
 
 namespace ProjectRealm.Infrastructure.Sqlite
 {
+    /// <summary>
+    /// 从 Unity SQLiteAsset 只读加载 Definition。打开时启用 query_only，且会核对数据库中的模块目录
+    /// 与当前代码目录，防止文档、构建产物和运行时代码发生漂移。
+    /// </summary>
     public sealed class SqliteWorldDefinitionStore : IWorldDefinitionStore
     {
         private readonly SQLiteAsset _definitionAsset;
@@ -26,6 +30,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
             }
         }
 
+        /// <summary>加载规则清单、三类关系图、所有权和节点模块组合。</summary>
         public WorldDefinition LoadWorld(StableId worldId)
         {
             using (var connection = Open())
@@ -93,6 +98,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
         private SQLiteConnection Open()
         {
             var connection = _definitionAsset.CreateConnection();
+            // Definition 是发布内容，不允许游戏运行时写入或触发不可信 schema 行为。
             connection.Execute("PRAGMA query_only=ON");
             connection.Execute("PRAGMA trusted_schema=OFF");
             connection.Execute("PRAGMA foreign_keys=ON");
@@ -102,6 +108,7 @@ namespace ProjectRealm.Infrastructure.Sqlite
 
         private static void ValidateModuleCatalog(SQLiteConnection connection)
         {
+            // 数据库只存机器目录；权威含义仍由版本化代码目录和架构文档共同约束。
             var expected = FrameworkModuleCatalog.Create();
             var stored = connection.Query<StoredModuleDefinitionRow>(
                 "SELECT definition_id, source_name, implementation_tier FROM module_definition ORDER BY definition_id");

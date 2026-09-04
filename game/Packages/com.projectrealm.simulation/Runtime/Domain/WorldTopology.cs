@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>模拟节点的语义类型；地理、势力和组织关系由不同图表达。</summary>
     public enum SimulationNodeKind
     {
         World,
@@ -16,6 +17,7 @@ namespace ProjectRealm.Domain
         Organization
     }
 
+    /// <summary>所有拓扑节点共享的稳定标识和可审计元数据。</summary>
     public class SimulationNode
     {
         public SimulationNode(
@@ -57,6 +59,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>地理树中的世界、区域、县、基层区划或聚落节点。</summary>
     public sealed class RegionNode : SimulationNode
     {
         public RegionNode(
@@ -78,6 +81,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>势力关系图中的政治或组织主体。</summary>
     public sealed class FactionNode : SimulationNode
     {
         public FactionNode(StableId nodeId, string displayName, bool historicalClaim = false)
@@ -86,6 +90,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>按父子关系组织的地理树，构造时拒绝缺失父节点和循环。</summary>
     public sealed class GeographicTree
     {
         private readonly Dictionary<StableId, RegionNode> _nodes;
@@ -162,6 +167,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>两个势力之间的有向关系。</summary>
     public sealed class FactionRelation
     {
         public FactionRelation(StableId fromFactionId, StableId toFactionId, string relationKind)
@@ -185,6 +191,7 @@ namespace ProjectRealm.Domain
         public string RelationKind { get; }
     }
 
+    /// <summary>势力节点与有向关系图。</summary>
     public sealed class FactionGraph
     {
         public FactionGraph(IEnumerable<FactionNode> nodes, IEnumerable<FactionRelation> relations = null)
@@ -222,6 +229,7 @@ namespace ProjectRealm.Domain
         public IReadOnlyList<FactionRelation> Relations { get; }
     }
 
+    /// <summary>势力对地理区域的管辖关系，不与地理父子关系混用。</summary>
     public sealed class JurisdictionRelation
     {
         public JurisdictionRelation(
@@ -257,6 +265,7 @@ namespace ProjectRealm.Domain
         public bool HistoricalClaim { get; }
     }
 
+    /// <summary>经过唯一性校验的管辖关系集合。</summary>
     public sealed class JurisdictionGraph
     {
         public JurisdictionGraph(IEnumerable<JurisdictionRelation> relations)
@@ -282,6 +291,7 @@ namespace ProjectRealm.Domain
         public IReadOnlyList<JurisdictionRelation> Relations { get; }
     }
 
+    /// <summary>聚落或设施的所有权关系。</summary>
     public sealed class SettlementOwner
     {
         public SettlementOwner(StableId settlementId, StableId ownerId, string ownershipKind)
@@ -305,6 +315,7 @@ namespace ProjectRealm.Domain
         public string OwnershipKind { get; }
     }
 
+    /// <summary>地理树、势力图、管辖图和聚落所有权的聚合根。</summary>
     public sealed class WorldTopology
     {
         public WorldTopology(

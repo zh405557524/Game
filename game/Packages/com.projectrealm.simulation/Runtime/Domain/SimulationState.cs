@@ -8,6 +8,9 @@ using System.Text;
 
 namespace ProjectRealm.Domain
 {
+    /// <summary>
+    /// 数据可信度不是数值本身。特别地，Unavailable 表示能力尚未实现，不能解释成业务值为零。
+    /// </summary>
     public enum DataQuality
     {
         Exact,
@@ -20,6 +23,7 @@ namespace ProjectRealm.Domain
         Blocked
     }
 
+    /// <summary>状态载荷的语义分类，用于校验、存档和诊断。</summary>
     public enum StateCategory
     {
         DirectState,
@@ -33,6 +37,7 @@ namespace ProjectRealm.Domain
         ProjectState
     }
 
+    /// <summary>由版本化 codec 解释的不可变状态载荷。</summary>
     public sealed class StateRecord
     {
         public StateRecord(
@@ -71,6 +76,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>最近成功闭合 Tick 的权威状态；对外只提供防御性副本。</summary>
     public sealed class CommittedState
     {
         private readonly Dictionary<string, StateRecord> _records;
@@ -108,12 +114,14 @@ namespace ProjectRealm.Domain
             return false;
         }
 
+        /// <summary>为下一 Tick 创建隔离的可写副本。</summary>
         public WorkingState BeginWorkingState()
         {
             return new WorkingState(this);
         }
     }
 
+    /// <summary>Working State 中一次设置或删除操作的审计记录。</summary>
     public sealed class StateDelta
     {
         public StateDelta(string key, StateRecord replacement)
@@ -137,6 +145,9 @@ namespace ProjectRealm.Domain
         public bool RemovesRecord => Replacement == null;
     }
 
+    /// <summary>
+    /// 单 Tick 的事务状态。Commit 产生新的 CommittedState，Rollback 关闭并丢弃当前副本。
+    /// </summary>
     public sealed class WorkingState
     {
         private readonly Dictionary<string, StateRecord> _records;
@@ -206,6 +217,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>模块在某节点、某阶段的执行结果和状态增量。</summary>
     public sealed class ModuleResult
     {
         public ModuleResult(
@@ -243,6 +255,7 @@ namespace ProjectRealm.Domain
         public IReadOnlyList<StateDelta> Deltas { get; }
     }
 
+    /// <summary>记录结算后仍未闭合的残差键；空集合不等于存在真实零流量。</summary>
     public sealed class ResidualLedger
     {
         public ResidualLedger(StableId ledgerId, TickId tickId, IEnumerable<string> residualKeys = null)
@@ -259,6 +272,7 @@ namespace ProjectRealm.Domain
         public IReadOnlyList<string> ResidualKeys { get; }
     }
 
+    /// <summary>节点在本 Tick 周期闭合后的模块结果集合。</summary>
     public sealed class NodePeriodResult
     {
         public NodePeriodResult(
@@ -287,6 +301,7 @@ namespace ProjectRealm.Domain
         public ResidualLedger ResidualLedger { get; }
     }
 
+    /// <summary>供查询和展示层读取的节点闭合快照引用。</summary>
     public sealed class NodeSnapshot
     {
         public NodeSnapshot(StableId nodeId, TickId tickId, StateHash stateHash, DataQuality dataQuality)
@@ -304,6 +319,7 @@ namespace ProjectRealm.Domain
         public DataQuality DataQuality { get; }
     }
 
+    /// <summary>单个 Tick 阶段的执行计数和成功状态。</summary>
     public sealed class StageExecutionRecord
     {
         public StageExecutionRecord(WorldExecutionStage stage, int moduleExecutionCount, bool succeeded, string reasonCode = null)
@@ -325,6 +341,7 @@ namespace ProjectRealm.Domain
         public string ReasonCode { get; }
     }
 
+    /// <summary>一次日 Tick 的完整、不可变执行报告。</summary>
     public sealed class WorldTickResult
     {
         public WorldTickResult(
@@ -360,8 +377,12 @@ namespace ProjectRealm.Domain
         public string FailureReason { get; }
     }
 
+    /// <summary>
+    /// 按规范顺序写入拓扑、模块和状态载荷，再计算 SHA-256；用于续跑一致性与存档校验。
+    /// </summary>
     public static class DeterministicStateHasher
     {
+        /// <summary>计算当前闭合世界的确定性状态散列。</summary>
         public static StateHash Compute(
             StableId worldId,
             WorldSeed worldSeed,
@@ -387,6 +408,7 @@ namespace ProjectRealm.Domain
                 writer.Write(clock.Day);
                 WriteString(writer, clock.CalendarDefinitionId.Value);
 
+                // 所有输入集合都在构造时按稳定 ID 排序，禁止依赖 Dictionary 枚举顺序。
                 foreach (var node in topology.Geography.Nodes)
                 {
                     WriteString(writer, node.NodeId.Value);
@@ -478,6 +500,7 @@ namespace ProjectRealm.Domain
         }
     }
 
+    /// <summary>版本化 PCG32 随机数生成器；不使用 UnityEngine.Random 或系统时间。</summary>
     public sealed class Pcg32
     {
         private ulong _state;
@@ -501,6 +524,7 @@ namespace ProjectRealm.Domain
             return (xorShifted >> rotation) | (xorShifted << ((-rotation) & 31));
         }
 
+        /// <summary>把完整随机寻址键哈希为 PCG32 的 seed 与 sequence。</summary>
         public static Pcg32 FromDescriptor(RandomStreamDescriptor descriptor)
         {
             if (descriptor == null)

@@ -7,6 +7,10 @@ using ProjectRealm.Ports;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>
+    /// 管理命令状态机、作用域内幂等键和资源预留。实例会在 Tick 开始时克隆，
+    /// 因此命令转换与世界状态共享同一个提交/回滚边界。
+    /// </summary>
     public sealed class CommandProcessor
     {
         private readonly Dictionary<StableId, CommandRecord> _commands;
@@ -39,6 +43,7 @@ namespace ProjectRealm.Application
         public IReadOnlyList<ResourceReservation> Reservations => new ReadOnlyCollection<ResourceReservation>(_reservations
             .OrderBy(reservation => reservation.ReservationId.Value, StringComparer.Ordinal).ToList());
 
+        /// <summary>提交新命令；同一权限作用域和幂等键的重复请求稳定返回原命令。</summary>
         public CommandRecord Submit(CommandEnvelope envelope, TickId tickId)
         {
             if (envelope == null)
@@ -46,6 +51,7 @@ namespace ProjectRealm.Application
                 throw new ArgumentNullException(nameof(envelope));
             }
 
+            // 幂等键必须带权限作用域，避免两个互不相关的辖区互相吞掉命令。
             var key = ScopeIdempotencyKey(envelope.AuthorityScopeId, envelope.IdempotencyKey);
             if (_idempotencyKeys.TryGetValue(key, out var existingId))
             {
@@ -64,6 +70,7 @@ namespace ProjectRealm.Application
             return command;
         }
 
+        /// <summary>执行 S80 校验；当前脚手架能力统一以 implementation_unavailable 拒绝。</summary>
         public int ValidatePending(TickId tickId)
         {
             var count = 0;
@@ -84,12 +91,14 @@ namespace ProjectRealm.Application
             return count;
         }
 
+        /// <summary>执行 S90 资源预留，并记录可持久化的预留凭据。</summary>
         public int ReserveAccepted(TickId tickId)
         {
             var count = 0;
             foreach (var command in OrderedWithStatus(CommandStatus.Accepted))
             {
                 Transition(command, CommandStatus.Reserving, tickId);
+                // resource.none/0 只用于验证状态机协议，不代表真实资源或库存为零。
                 var reservation = new ResourceReservation(
                     new StableId("reservation." + command.Envelope.CommandInstanceId.Value),
                     command.Envelope.CommandInstanceId,
@@ -105,6 +114,7 @@ namespace ProjectRealm.Application
             return count;
         }
 
+        /// <summary>为新 Tick 创建事务副本，保留既有命令、状态事件和预留。</summary>
         public CommandProcessor Clone()
         {
             return new CommandProcessor(
@@ -114,6 +124,7 @@ namespace ProjectRealm.Application
                 Reservations);
         }
 
+        /// <summary>执行 S100，把已预留命令送入执行态。</summary>
         public int DispatchReserved(TickId tickId)
         {
             var commands = OrderedWithStatus(CommandStatus.Reserved);
@@ -125,6 +136,7 @@ namespace ProjectRealm.Application
             return commands.Count;
         }
 
+        /// <summary>执行 S110 的同步立即命令路径；长期行动将在后续版本扩展。</summary>
         public int ExecuteDispatched(TickId tickId)
         {
             var commands = OrderedWithStatus(CommandStatus.Dispatched);

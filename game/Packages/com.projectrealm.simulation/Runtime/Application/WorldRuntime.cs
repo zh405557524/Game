@@ -7,6 +7,10 @@ using ProjectRealm.Ports;
 
 namespace ProjectRealm.Application
 {
+    /// <summary>
+    /// 描述一次显式时间推进请求。月、季、年并不是直接跳日期，而是连续执行日 Tick，
+    /// 直到命中相应的闭合边界。
+    /// </summary>
     public sealed class AdvanceRequest
     {
         public AdvanceRequest(AdvanceUnit unit, int count = 1)
@@ -24,8 +28,17 @@ namespace ProjectRealm.Application
         public int Count { get; }
     }
 
+    /// <summary>
+    /// 世界模拟的应用层外观。它集中管理时钟、已提交状态、模块实例、命令、检查点与存档，
+    /// Unity 和其他调用方只能通过这里显式推进权威世界。
+    /// </summary>
+    /// <remarks>
+    /// 每个 Tick 先在 Working State 和命令副本上执行；只有完整成功后，本对象才替换当前状态。
+    /// 因而读取诊断信息、刷新窗口或计算状态散列都不会推进世界。
+    /// </remarks>
     public sealed class WorldRuntime : ISimulationSessionRuntime
     {
+        // 调试历史只保留最近若干 Tick；权威历史由检查点和存档承载。
         private const int MaximumTickHistory = 32;
 
         private readonly TickCoordinator _tickCoordinator;
@@ -105,6 +118,10 @@ namespace ProjectRealm.Application
         public IReadOnlyList<NodeSnapshot> LatestNodeSnapshots => _latestNodeSnapshots;
         public CommittedState CommittedState => _committedState;
 
+        /// <summary>
+        /// 按日、月、季或年推进世界，并返回最后一个日 Tick 的闭合结果。
+        /// 任一日失败时立即停止，且失败 Tick 不会改变已提交状态。
+        /// </summary>
         public WorldTickResult Advance(AdvanceRequest request)
         {
             if (request == null)
@@ -137,6 +154,7 @@ namespace ProjectRealm.Application
             return lastResult;
         }
 
+        /// <summary>兼容旧 <see cref="SimulationSession"/> API 的单日推进入口。</summary>
         public void AdvanceOneDay()
         {
             var result = Advance(new AdvanceRequest(AdvanceUnit.Day));
@@ -146,11 +164,13 @@ namespace ProjectRealm.Application
             }
         }
 
+        /// <summary>把命令加入当前权威命令队列；实际校验和执行发生在后续 Tick 阶段。</summary>
         public CommandRecord SubmitCommand(CommandEnvelope envelope)
         {
             return _commandProcessor.Submit(envelope, new TickId(Clock.TickSequence));
         }
 
+        /// <summary>把最近闭合 Tick 的完整世界快照写入配置的存档仓储。</summary>
         public void Save()
         {
             if (_saveStore == null)
@@ -161,6 +181,7 @@ namespace ProjectRealm.Application
             _saveStore.Save(ExportSaveData());
         }
 
+        /// <summary>组装持久化 DTO，不直接执行文件或数据库写入。</summary>
         public WorldSaveData ExportSaveData()
         {
             var currentCheckpoint = _checkpoints[_checkpoints.Count - 1];
@@ -184,6 +205,7 @@ namespace ProjectRealm.Application
 
         private WorldTickResult AdvanceDayInternal()
         {
+            // Coordinator 返回一个候选提交包；在 Committed=true 之前不替换任何权威字段。
             var commit = _tickCoordinator.ExecuteDay(
                 WorldId,
                 WorldSeed,
@@ -200,6 +222,7 @@ namespace ProjectRealm.Application
                 return result;
             }
 
+            // 统一交换时钟、状态、命令和检查点，避免调用方观察到半个 Tick。
             Clock = commit.Clock;
             _committedState = commit.State;
             _commandProcessor = commit.CommandProcessor;
@@ -232,6 +255,7 @@ namespace ProjectRealm.Application
         }
     }
 
+    /// <summary>为展示层提供只读节点快照，避免展示层直接读取 Working State。</summary>
     public sealed class SnapshotAssembler
     {
         public IReadOnlyList<NodeSnapshot> GetLatest(WorldRuntime runtime)
@@ -245,6 +269,7 @@ namespace ProjectRealm.Application
         }
     }
 
+    /// <summary>创建新世界的确定性初始检查点。</summary>
     public static class CheckpointCoordinator
     {
         public static WorldCheckpoint CreateInitial(
