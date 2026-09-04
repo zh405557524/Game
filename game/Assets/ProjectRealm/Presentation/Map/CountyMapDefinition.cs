@@ -1,7 +1,8 @@
+using ProjectRealm.Foundation;
 using System;
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map
+namespace ProjectRealm.UnityPresentation.Map
 {
     public enum TerrainRegionKind
     {

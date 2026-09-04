@@ -1,10 +1,10 @@
 {
-  "name": "ProjectRealm.Presentation",
-  "rootNamespace": "ProjectRealm.Presentation",
+  "name": "ProjectRealm.UnityPresentation",
+  "rootNamespace": "ProjectRealm.UnityPresentation",
   "references": [
-    "ProjectRealm.Application",
-    "ProjectRealm.Domain",
-    "ProjectRealm.Ports",
+    "ProjectRealm.Foundation",
+    "ProjectRealm.Framework",
+    "ProjectRealm.Presentation",
     "Unity.InputSystem"
   ],
   "includePlatforms": [],

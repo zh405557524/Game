@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectRealm.Presentation
+namespace ProjectRealm.UnityPresentation
 {
     [DisallowMultipleComponent]
     public sealed class ProjectRealmViewRoot : MonoBehaviour

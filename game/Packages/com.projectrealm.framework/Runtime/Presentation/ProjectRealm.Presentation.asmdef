@@ -1,0 +1,17 @@
+{
+  "name": "ProjectRealm.Presentation",
+  "rootNamespace": "ProjectRealm.Presentation",
+  "references": [
+    "ProjectRealm.Foundation",
+    "ProjectRealm.Framework"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

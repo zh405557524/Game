@@ -1,0 +1,26 @@
+{
+  "name": "ProjectRealm.Tests.Unit",
+  "rootNamespace": "ProjectRealm.Tests.Unit",
+  "references": [
+    "ProjectRealm.Foundation",
+    "ProjectRealm.SystemServer",
+    "ProjectRealm.World",
+    "ProjectRealm.Framework"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

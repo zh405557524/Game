@@ -2,11 +2,13 @@
   "name": "ProjectRealm.Tests.Integration",
   "rootNamespace": "ProjectRealm.Tests.Integration",
   "references": [
-    "ProjectRealm.Application",
-    "ProjectRealm.Domain",
-    "ProjectRealm.Infrastructure",
-    "ProjectRealm.Ports",
+    "ProjectRealm.Foundation",
+    "ProjectRealm.SystemServer",
+    "ProjectRealm.World",
+    "ProjectRealm.Framework",
+    "ProjectRealm.Bootstrap",
     "ProjectRealm.Presentation",
+    "ProjectRealm.UnityPresentation",
     "Unity.InputSystem",
     "Unity.InputSystem.TestFramework"
   ],

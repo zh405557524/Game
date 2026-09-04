@@ -2,11 +2,12 @@
   "name": "ProjectRealm.Framework.Tests",
   "rootNamespace": "ProjectRealm.Framework.Tests",
   "references": [
-    "ProjectRealm.Application",
-    "ProjectRealm.Domain",
-    "ProjectRealm.Ports",
-    "ProjectRealm.Infrastructure.Sqlite",
-    "ProjectRealm.UnityFramework",
+    "ProjectRealm.Foundation",
+    "ProjectRealm.SystemServer",
+    "ProjectRealm.World",
+    "ProjectRealm.Framework",
+    "ProjectRealm.Persistence.Sqlite",
+    "ProjectRealm.Bootstrap",
     "Gilzoide.SqliteNet"
   ],
   "includePlatforms": [

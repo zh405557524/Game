@@ -2,7 +2,8 @@
   "name": "ProjectRealm.EditorTools",
   "rootNamespace": "ProjectRealm.EditorTools",
   "references": [
-    "ProjectRealm.Presentation"
+    "ProjectRealm.Bootstrap",
+    "ProjectRealm.UnityPresentation"
   ],
   "includePlatforms": [
     "Editor"

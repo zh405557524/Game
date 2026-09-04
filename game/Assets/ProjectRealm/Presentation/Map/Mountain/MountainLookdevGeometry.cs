@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ProjectRealm.Presentation.Map.Mountain
+namespace ProjectRealm.UnityPresentation.Map.Mountain
 {
     /// <summary>Deterministic, editable height field. All geometry comes from controls, never an illustration's luminance.</summary>
     public static class MountainLookdevGeometry

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map
+namespace ProjectRealm.UnityPresentation.Map
 {
     // Visual study only. These samples do not own simulation or save-game terrain data.
     public enum LandformKind { Plain, Hills, Mountain, Plateau, Basin }

@@ -112,6 +112,15 @@ export function makeSeamless(source, feather = 0.12) {
   return seamlessAxis(seamlessAxis(source, true, feather), false, feather);
 }
 
+export function toGrayscale(source) {
+  const out = Buffer.from(source.pixels);
+  for (let i = 0; i < out.length; i += source.channels) {
+    const gray = clampByte(source.pixels[i] * 0.2126 + source.pixels[i + 1] * 0.7152 + source.pixels[i + 2] * 0.0722);
+    out[i] = out[i + 1] = out[i + 2] = gray;
+  }
+  return { ...source, pixels: out };
+}
+
 export function extractCheckerAlpha(source, transparentAt = 0.045, opaqueAt = 0.55) {
   if (source.channels !== 3) throw new Error('Checker extraction expects an RGB source.');
   const out = Buffer.alloc(source.width * source.height * 4);
@@ -211,9 +220,10 @@ function parseArgs(argv) {
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
   try {
     const { mode, options } = parseArgs(process.argv.slice(2));
-    if (!options.input || !options.output) throw new Error('Usage: process_texture.mjs <seamless|alpha|tile|preview> --input FILE --output FILE [options]');
+    if (!options.input || !options.output) throw new Error('Usage: process_texture.mjs <grayscale|seamless|alpha|tile|preview> --input FILE --output FILE [options]');
     const source = decodePng(options.input); let result, extra = {};
-    if (mode === 'seamless') {
+    if (mode === 'grayscale') result = toGrayscale(source);
+    else if (mode === 'seamless') {
       const feather = Number(options.feather ?? 0.12); result = makeSeamless(source, feather); extra.feather = feather;
     } else if (mode === 'alpha') {
       const extracted = extractCheckerAlpha(source, Number(options.transparentAt ?? 0.045), Number(options.opaqueAt ?? 0.55));

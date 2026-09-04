@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="../../game/Packages/com.projectrealm.simulation/Runtime/Domain/*.cs" />
+    <Compile Include="../../game/Packages/com.projectrealm.framework/Runtime/Foundation/*.cs" />
+    <Compile Include="../../game/Packages/com.projectrealm.framework/Runtime/World/*.cs" />
   </ItemGroup>
 </Project>

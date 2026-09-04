@@ -102,7 +102,16 @@ game/*.sln
 # Local Unity art, scenes, and generated content (not stored on GitHub)
 game/Assets/InputSystem_Actions.inputactions
 game/Assets/InputSystem_Actions.inputactions.meta
-game/Assets/Scenes/
+game/Assets/Scenes/*
+!game/Assets/Scenes/Runtime.meta
+!game/Assets/Scenes/Runtime/
+game/Assets/Scenes/Runtime/*
+!game/Assets/Scenes/Runtime/00_Bootstrap.unity
+!game/Assets/Scenes/Runtime/00_Bootstrap.unity.meta
+!game/Assets/Scenes/Runtime/10_MainMenu.unity
+!game/Assets/Scenes/Runtime/10_MainMenu.unity.meta
+!game/Assets/Scenes/Runtime/20_Gameplay.unity
+!game/Assets/Scenes/Runtime/20_Gameplay.unity.meta
 game/Assets/Scenes.meta
 game/Assets/Settings/
 game/Assets/Settings.meta

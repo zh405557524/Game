@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map.Water
+namespace ProjectRealm.UnityPresentation.Map.Water
 {
     // Presentation-only test input. Never a production Definition or save-game record.
     public sealed class LakeLookdevProfile : ScriptableObject

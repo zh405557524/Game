@@ -1,0 +1,19 @@
+{
+  "name": "ProjectRealm.Persistence.Sqlite",
+  "rootNamespace": "ProjectRealm.Persistence.Sqlite",
+  "references": [
+    "ProjectRealm.Foundation",
+    "ProjectRealm.World",
+    "ProjectRealm.Framework",
+    "Gilzoide.SqliteNet"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

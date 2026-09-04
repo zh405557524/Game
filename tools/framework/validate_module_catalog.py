@@ -15,7 +15,7 @@ DOC_ROOTS = (
 )
 CATALOG_SOURCE = (
     REPO_ROOT
-    / "game/Packages/com.projectrealm.simulation/Runtime/Application/FrameworkModuleCatalog.cs"
+    / "game/Packages/com.projectrealm.framework/Runtime/World/FrameworkModuleCatalog.cs"
 )
 DEFINITION_DB = (
     REPO_ROOT

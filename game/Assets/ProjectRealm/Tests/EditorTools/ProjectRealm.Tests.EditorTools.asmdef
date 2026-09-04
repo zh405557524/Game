@@ -1,7 +1,7 @@
 {
   "name": "ProjectRealm.Tests.EditorTools",
   "rootNamespace": "ProjectRealm.Tests.EditorTools",
-  "references": ["ProjectRealm.EditorTools", "ProjectRealm.Presentation"],
+  "references": ["ProjectRealm.EditorTools", "ProjectRealm.Bootstrap", "ProjectRealm.UnityPresentation"],
   "includePlatforms": ["Editor"],
   "autoReferenced": false,
   "defineConstraints": ["UNITY_INCLUDE_TESTS"],

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace ProjectRealm.Presentation.Map.Water
+namespace ProjectRealm.UnityPresentation.Map.Water
 {
     [RequireComponent(typeof(Camera))]
     public sealed class LakeLookdevView : MonoBehaviour

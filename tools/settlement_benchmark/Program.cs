@@ -2,7 +2,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
-using ProjectRealm.Domain;
+using ProjectRealm.Foundation;
+using ProjectRealm.World;
 
 // A bounded diagnostic harness, NOT the game scheduler or a full economic model.
 // All simulated people, decisions, flows and prices below are synthetic.

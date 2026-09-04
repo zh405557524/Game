@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace ProjectRealm.Presentation.Map
+namespace ProjectRealm.UnityPresentation.Map
 {
     [RequireComponent(typeof(Camera))]
     public sealed class TerrainDebugView : MonoBehaviour

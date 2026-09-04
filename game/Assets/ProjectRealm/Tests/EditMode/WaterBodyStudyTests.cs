@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using ProjectRealm.Presentation.Map.Water;
+using ProjectRealm.UnityPresentation.Map.Water;
 using UnityEngine;
 
 namespace ProjectRealm.Tests.Integration

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map.Water
+namespace ProjectRealm.UnityPresentation.Map.Water
 {
     public enum WaterStudyKind { Stream = 1, Lake = 2, Pond = 3, Wetland = 4, Coast = 5 }
 

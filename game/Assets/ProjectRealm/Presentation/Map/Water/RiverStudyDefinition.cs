@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map.Water
+namespace ProjectRealm.UnityPresentation.Map.Water
 {
     [Serializable]
     public struct RiverStation

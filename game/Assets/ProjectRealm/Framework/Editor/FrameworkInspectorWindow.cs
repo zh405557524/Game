@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using System.Linq;
-using ProjectRealm.Application;
-using ProjectRealm.Domain;
-using ProjectRealm.UnityFramework;
+using System.Text;
+using ProjectRealm.Bootstrap;
+using ProjectRealm.Foundation;
+using ProjectRealm.Framework;
 using SQLite;
 using UnityEditor;
 using UnityEditor.Build;
@@ -12,232 +12,165 @@ using UnityEngine;
 
 namespace ProjectRealm.Framework.Editor
 {
-    /// <summary>
-    /// 世界模拟只读调试窗口。绘制和切换页签不推进时间；只有工具栏中的显式动作会调用 Host。
-    /// </summary>
+    /// <summary>只通过 Framework Manager 查询和操作世界的 Editor 调试窗口。</summary>
     public sealed class FrameworkInspectorWindow : EditorWindow
     {
         private static readonly string[] Tabs =
         {
-            "World / Graphs",
-            "Module Graph",
-            "Tick Timeline",
-            "Commands & Events",
-            "Snapshots / Ledgers",
-            "Persistence / Audit"
+            "World / Graphs", "Module Graph", "Tick Timeline",
+            "Commands & Events", "Snapshots / Ledgers", "Persistence / Audit"
         };
 
-        private int _selectedTab;
-        private Vector2 _scroll;
-        private string _search = string.Empty;
-        private int _page;
         private const int PageSize = 50;
+        private int _selectedTab;
+        private int _page;
+        private string _search = string.Empty;
+        private Vector2 _scroll;
 
         [MenuItem("Project Realm/Simulation/Framework Inspector")]
-        public static void Open()
-        {
-            GetWindow<FrameworkInspectorWindow>("Realm Framework");
-        }
+        public static void Open() => GetWindow<FrameworkInspectorWindow>("Realm Framework");
 
         private void OnGUI()
         {
-            var host = FindHost();
-            DrawToolbar(host);
+            var application = FindApplication();
+            DrawToolbar(application);
             EditorGUILayout.Space();
             _selectedTab = GUILayout.Toolbar(_selectedTab, Tabs);
-            EditorGUILayout.Space();
 
-            if (host == null || host.Runtime == null)
+            if (application == null || application.Context == null)
             {
                 EditorGUILayout.HelpBox(
-                    host == null
-                        ? "No UnitySimulationHost exists in the open scene. Creating a host is an explicit scene action."
-                        : "The host has no world. Create or load a development world.",
+                    "No running RealmApplication was found. Open 00_Bootstrap and enter Play Mode. The Inspector no longer creates a second simulation host.",
                     MessageType.Info);
-                if (host == null && GUILayout.Button("Create UnitySimulationHost in Scene"))
-                {
-                    var gameObject = new GameObject("Project Realm Simulation Host");
-                    gameObject.AddComponent<UnitySimulationHost>();
-                    Undo.RegisterCreatedObjectUndo(gameObject, "Create Project Realm Simulation Host");
-                    Selection.activeGameObject = gameObject;
-                }
-
                 return;
             }
 
-            if (!string.IsNullOrEmpty(host.LastError))
+            if (!string.IsNullOrEmpty(application.LastError))
             {
-                EditorGUILayout.HelpBox(host.LastError, MessageType.Error);
+                EditorGUILayout.HelpBox(application.LastError, MessageType.Error);
             }
 
-            var runtime = host.Runtime;
-            // 每次重绘重新创建只读投影，不缓存或修改权威运行时对象。
-            var diagnostics = new SimulationDiagnosticsQuery().Query(runtime, _search, _page, PageSize);
-            _scroll = EditorGUILayout.BeginScrollView(_scroll);
-            switch (_selectedTab)
+            var result = application.Context.Diagnostics.Query(_search, _page, PageSize);
+            if (!result.Succeeded)
             {
-                case 0: DrawWorld(diagnostics); break;
-                case 1: DrawModules(runtime, diagnostics); break;
-                case 2: DrawTickTimeline(diagnostics); break;
-                case 3: DrawCommandsAndEvents(runtime); break;
-                case 4: DrawSnapshots(runtime); break;
-                case 5: DrawPersistence(runtime, host); break;
+                EditorGUILayout.HelpBox($"{result.Error.Code}: {result.Error.Message}", MessageType.Error);
+                return;
             }
+
+            _scroll = EditorGUILayout.BeginScrollView(_scroll);
+            DrawTab(application, result.Value);
             EditorGUILayout.EndScrollView();
         }
 
-        private void DrawToolbar(UnitySimulationHost host)
+        private void DrawToolbar(RealmApplication application)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-            using (new EditorGUI.DisabledScope(host == null))
+            var context = application?.Context;
+            var hasWorld = context?.World.HasActiveWorld == true;
+            using (new EditorGUI.DisabledScope(context == null || hasWorld))
             {
-                if (GUILayout.Button("New", EditorStyles.toolbarButton)) Invoke(host, host.CreateDevelopmentWorld);
-                if (GUILayout.Button("Load", EditorStyles.toolbarButton)) Invoke(host, host.LoadDevelopmentWorld);
+                if (GUILayout.Button("New", EditorStyles.toolbarButton))
+                    Invoke(() => context.World.Create(new NewRealmWorldRequest("development-framework", "MING1628", 1628)));
+                if (GUILayout.Button("Load", EditorStyles.toolbarButton)) Invoke(() => context.Saves.Load("development-framework"));
             }
 
-            using (new EditorGUI.DisabledScope(host == null || host.Runtime == null))
+            using (new EditorGUI.DisabledScope(context == null || !hasWorld))
             {
-                if (GUILayout.Button("+Day", EditorStyles.toolbarButton)) Invoke(host, () => host.Step(AdvanceUnit.Day));
-                if (GUILayout.Button("+Month", EditorStyles.toolbarButton)) Invoke(host, () => host.Step(AdvanceUnit.Month));
-                if (GUILayout.Button("+Season", EditorStyles.toolbarButton)) Invoke(host, () => host.Step(AdvanceUnit.Season));
-                if (GUILayout.Button("+Year", EditorStyles.toolbarButton)) Invoke(host, () => host.Step(AdvanceUnit.Year));
-                if (GUILayout.Button("Save", EditorStyles.toolbarButton)) Invoke(host, host.SaveDevelopmentWorld);
-                if (GUILayout.Button("Reload", EditorStyles.toolbarButton)) Invoke(host, host.LoadDevelopmentWorld);
-                if (GUILayout.Button("Export", EditorStyles.toolbarButton)) Export(host);
+                if (GUILayout.Button("+Day", EditorStyles.toolbarButton)) Invoke(() => context.Simulation.Advance(RealmAdvanceUnit.Day));
+                if (GUILayout.Button("+Month", EditorStyles.toolbarButton)) Invoke(() => context.Simulation.Advance(RealmAdvanceUnit.Month));
+                if (GUILayout.Button("+Season", EditorStyles.toolbarButton)) Invoke(() => context.Simulation.Advance(RealmAdvanceUnit.Season));
+                if (GUILayout.Button("+Year", EditorStyles.toolbarButton)) Invoke(() => context.Simulation.Advance(RealmAdvanceUnit.Year));
+                if (GUILayout.Button("Save", EditorStyles.toolbarButton)) Invoke(context.Saves.Save);
+                if (GUILayout.Button("Close", EditorStyles.toolbarButton)) Invoke(context.World.Close);
+                if (GUILayout.Button("Export", EditorStyles.toolbarButton)) Export(context.Diagnostics);
             }
 
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Read-only unless an action button is pressed", EditorStyles.miniLabel);
+            GUILayout.Label(application == null ? "No RealmApplication" : application.State.ToString(), EditorStyles.miniLabel);
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawWorld(SimulationDiagnosticsSnapshot diagnostics)
+        private void DrawTab(RealmApplication application, RealmDiagnosticsSnapshot diagnostics)
         {
-            DrawClockAndHash(diagnostics);
-            EditorGUILayout.LabelField("Topology", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Geographic nodes", diagnostics.GeographicNodeCount.ToString());
+            switch (_selectedTab)
+            {
+                case 0: DrawWorld(application, diagnostics); break;
+                case 1: DrawModules(diagnostics); break;
+                case 2: DrawStages(diagnostics); break;
+                case 3: DrawCommandCounts(diagnostics); break;
+                case 4: DrawSnapshotCounts(diagnostics); break;
+                case 5: DrawPersistence(diagnostics); break;
+            }
+        }
+
+        private void DrawWorld(RealmApplication application, RealmDiagnosticsSnapshot diagnostics)
+        {
+            DrawClockAndHash(diagnostics.World);
+            EditorGUILayout.LabelField("Application state", application.State.ToString());
+            EditorGUILayout.LabelField("Geographic nodes", diagnostics.World.GeographicNodeCount.ToString());
             EditorGUILayout.LabelField("Factions", diagnostics.FactionCount.ToString());
             EditorGUILayout.LabelField("Jurisdictions", diagnostics.JurisdictionCount.ToString());
             DrawSearchAndPaging();
             foreach (var node in diagnostics.Nodes)
-            {
-                EditorGUILayout.LabelField(
-                    node.NodeId.Value,
-                    $"{node.Kind} | {node.DisplayName} | parent={node.GeographicParentId?.Value ?? "-"}");
-            }
+                EditorGUILayout.LabelField(node.Id, $"{node.Kind} | {node.DisplayName}");
         }
 
-        private void DrawModules(WorldRuntime runtime, SimulationDiagnosticsSnapshot diagnostics)
+        private void DrawModules(RealmDiagnosticsSnapshot diagnostics)
         {
-            EditorGUILayout.LabelField("Module graph", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Instances", diagnostics.ModuleInstanceCount.ToString());
-            EditorGUILayout.LabelField("Scaffold / Unavailable", diagnostics.ScaffoldModuleCount.ToString());
-            EditorGUILayout.HelpBox(
-                "Scaffold modules close framework ticks but do not claim real domain facts or numeric zeroes.",
-                MessageType.Warning);
+            EditorGUILayout.LabelField("Module instances", diagnostics.World.ModuleInstanceCount.ToString());
+            EditorGUILayout.LabelField("Scaffold / Unavailable", diagnostics.World.ScaffoldModuleCount.ToString());
+            EditorGUILayout.HelpBox("Scaffold means the framework ran, not that population, inventory or economy equals zero.", MessageType.Warning);
             DrawSearchAndPaging();
-            foreach (var instance in diagnostics.Modules)
-            {
-                var definition = runtime.ModuleCatalog.GetRequired(instance.DefinitionId);
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(instance.NodeId.Value, GUILayout.Width(210));
-                EditorGUILayout.LabelField(definition.SourceName, GUILayout.Width(230));
-                GUILayout.Label(instance.LifecycleState.ToString(), GUILayout.Width(80));
-                GUILayout.Label("SCAFFOLD / UNAVAILABLE", EditorStyles.miniBoldLabel);
-                EditorGUILayout.EndHorizontal();
-            }
+            foreach (var module in diagnostics.Modules)
+                EditorGUILayout.LabelField(module.InstanceId,
+                    $"{module.NodeId} | {module.DefinitionId} | {module.Lifecycle} | {module.ImplementationTier}");
         }
 
-        private static void DrawTickTimeline(SimulationDiagnosticsSnapshot diagnostics)
+        private static void DrawStages(RealmDiagnosticsSnapshot diagnostics)
         {
-            DrawClockAndHash(diagnostics);
-            var tick = diagnostics.LatestTick;
-            if (tick == null)
+            DrawClockAndHash(diagnostics.World);
+            if (diagnostics.Stages.Count == 0)
             {
-                EditorGUILayout.HelpBox("No tick has run yet.", MessageType.Info);
+                EditorGUILayout.HelpBox("No Tick has run yet.", MessageType.Info);
                 return;
             }
 
-            EditorGUILayout.LabelField("Tick " + tick.TickId.Value, EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Committed", tick.Committed.ToString());
-            EditorGUILayout.LabelField("Period closes", tick.PeriodCloseFlags.ToString());
-            foreach (var stage in tick.Stages)
-            {
-                EditorGUILayout.LabelField(
-                    $"{(int)stage.Stage:D3} {stage.Stage}",
-                    $"executions={stage.ModuleExecutionCount}, success={stage.Succeeded}, reason={stage.ReasonCode}");
-            }
+            foreach (var stage in diagnostics.Stages)
+                EditorGUILayout.LabelField(stage.Stage,
+                    $"executions={stage.ExecutionCount}, success={stage.Succeeded}, reason={stage.FailureCode}");
         }
 
-        private static void DrawCommandsAndEvents(WorldRuntime runtime)
+        private static void DrawCommandCounts(RealmDiagnosticsSnapshot diagnostics)
         {
-            EditorGUILayout.LabelField("Commands", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Count", runtime.Commands.Count.ToString());
-            foreach (var command in runtime.Commands.Take(200))
-            {
-                EditorGUILayout.LabelField(
-                    command.Envelope.CommandInstanceId.Value,
-                    $"{command.Status} | {command.Envelope.CommandDefinitionId.Value} | transitions={command.StatusEvents.Count}");
-            }
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Committed events", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Count", runtime.Events.Count.ToString());
-            foreach (var item in runtime.Events.Take(200))
-            {
-                EditorGUILayout.LabelField(item.EventId.Value, $"tick={item.CommittedTick.Value}");
-            }
+            EditorGUILayout.LabelField("Commands", diagnostics.CommandCount.ToString());
+            EditorGUILayout.LabelField("Reservations", diagnostics.ReservationCount.ToString());
+            EditorGUILayout.LabelField("Committed events", diagnostics.EventCount.ToString());
         }
 
-        private static void DrawSnapshots(WorldRuntime runtime)
+        private static void DrawSnapshotCounts(RealmDiagnosticsSnapshot diagnostics)
         {
-            EditorGUILayout.LabelField("Latest node snapshots", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Count", runtime.LatestNodeSnapshots.Count.ToString());
-            foreach (var snapshot in runtime.LatestNodeSnapshots.Take(200))
-            {
-                EditorGUILayout.LabelField(
-                    snapshot.NodeId.Value,
-                    $"tick={snapshot.TickId.Value} | quality={snapshot.DataQuality} | {snapshot.StateHash.Sha256.Substring(0, 12)}…");
-            }
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Latest empty period ledgers", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Count", runtime.LatestNodeResults.Count.ToString());
-            foreach (var result in runtime.LatestNodeResults.Take(100))
-            {
-                EditorGUILayout.LabelField(
-                    result.NodeId.Value,
-                    $"{result.DataQuality} | modules={result.ModuleResults.Count} | residuals={result.ResidualLedger.ResidualKeys.Count}");
-            }
+            EditorGUILayout.LabelField("Current data quality", diagnostics.World.DataQuality);
+            EditorGUILayout.LabelField("Closed checkpoints", diagnostics.CheckpointCount.ToString());
+            EditorGUILayout.LabelField("Latest failure", diagnostics.LatestFailure);
         }
 
-        private static void DrawPersistence(WorldRuntime runtime, UnitySimulationHost host)
+        private static void DrawPersistence(RealmDiagnosticsSnapshot diagnostics)
         {
-            EditorGUILayout.LabelField("Persistence and audit", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Save ID", runtime.SaveId.Value);
-            EditorGUILayout.LabelField("Closed checkpoints", runtime.Checkpoints.Count.ToString());
-            EditorGUILayout.LabelField("Current state SHA-256", runtime.CurrentStateHash.Sha256);
-            EditorGUILayout.LabelField("Definition SHA-256", runtime.Ruleset.DefinitionContentHash);
-            EditorGUILayout.LabelField("Ruleset", runtime.Ruleset.RulesetVersion);
-            EditorGUILayout.LabelField("Module catalog", runtime.Ruleset.ModuleCatalogVersion);
-            EditorGUILayout.LabelField("State schema", runtime.Ruleset.StateSchemaVersion);
-            EditorGUILayout.LabelField("Commercial release ready", runtime.Ruleset.CommercialReleaseReady.ToString());
-            EditorGUILayout.HelpBox(
-                "This Definition is development-only. A non-development build is blocked while it is present.",
-                MessageType.Warning);
-            EditorGUILayout.TextArea(host.ExportDiagnostics(), GUILayout.MinHeight(220));
+            EditorGUILayout.LabelField("Save ID", diagnostics.World.SaveId);
+            EditorGUILayout.LabelField("State SHA-256", diagnostics.World.StateHash);
+            EditorGUILayout.LabelField("Commercial release ready", diagnostics.World.CommercialReleaseReady.ToString());
+            EditorGUILayout.HelpBox("The active Definition is development-only while authoritative capabilities remain Scaffold/Unavailable.", MessageType.Warning);
         }
 
         private void DrawSearchAndPaging()
         {
             EditorGUILayout.BeginHorizontal();
-            var nextSearch = EditorGUILayout.TextField("Search", _search);
-            if (!string.Equals(nextSearch, _search, StringComparison.Ordinal))
+            var next = EditorGUILayout.TextField("Search", _search);
+            if (!string.Equals(next, _search, StringComparison.Ordinal))
             {
-                _search = nextSearch;
+                _search = next;
                 _page = 0;
             }
-
             using (new EditorGUI.DisabledScope(_page == 0))
             {
                 if (GUILayout.Button("Previous", GUILayout.Width(72))) _page--;
@@ -247,43 +180,56 @@ namespace ProjectRealm.Framework.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        private static void DrawClockAndHash(SimulationDiagnosticsSnapshot diagnostics)
+        private static void DrawClockAndHash(WorldSessionSnapshot world)
         {
-            EditorGUILayout.LabelField("World clock", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField(
-                "Economic date",
-                $"Y{diagnostics.Clock.EconomicYear:D4} M{diagnostics.Clock.Month:D2} D{diagnostics.Clock.Day:D2}");
-            EditorGUILayout.LabelField("Tick", diagnostics.Clock.TickSequence.ToString());
-            EditorGUILayout.LabelField("State SHA-256", diagnostics.StateHash.Sha256);
-        }
-
-        private static UnitySimulationHost FindHost()
-        {
-            return UnitySimulationHost.Active != null
-                ? UnitySimulationHost.Active
-                : FindAnyObjectByType<UnitySimulationHost>(FindObjectsInactive.Include);
-        }
-
-        private static void Invoke(UnitySimulationHost host, Action action)
-        {
-            try
+            if (!world.HasActiveWorld)
             {
-                action();
-                EditorUtility.SetDirty(host);
+                EditorGUILayout.HelpBox("No active world. MainMenu and Inspector queries do not create one.", MessageType.Info);
+                return;
             }
-            catch (Exception exception)
-            {
-                Debug.LogException(exception);
-            }
+
+            EditorGUILayout.LabelField("Economic date", $"Y{world.Year:D4} M{world.Month:D2} D{world.Day:D2}");
+            EditorGUILayout.LabelField("Tick", world.Tick.ToString());
+            EditorGUILayout.LabelField("State SHA-256", world.StateHash);
         }
 
-        private static void Export(UnitySimulationHost host)
+        private static RealmApplication FindApplication() =>
+            FindAnyObjectByType<RealmApplication>(FindObjectsInactive.Include);
+
+        private static void Invoke(Func<RealmResult> action)
         {
+            var result = action();
+            if (!result.Succeeded) Debug.LogError($"{result.Error.Code}: {result.Error.Message}");
+        }
+
+        private static void Invoke<T>(Func<RealmResult<T>> action)
+        {
+            var result = action();
+            if (!result.Succeeded) Debug.LogError($"{result.Error.Code}: {result.Error.Message}");
+        }
+
+        private static void Export(DiagnosticsManager diagnostics)
+        {
+            var result = diagnostics.Query(pageSize: 500);
+            if (!result.Succeeded)
+            {
+                Debug.LogError($"{result.Error.Code}: {result.Error.Message}");
+                return;
+            }
+
+            var snapshot = result.Value;
+            var text = new StringBuilder()
+                .AppendLine("Project Realm Framework Diagnostics")
+                .AppendLine("world=" + snapshot.World.WorldId)
+                .AppendLine("save=" + snapshot.World.SaveId)
+                .AppendLine("tick=" + snapshot.World.Tick)
+                .AppendLine("state_sha256=" + snapshot.World.StateHash)
+                .AppendLine("geographic_nodes=" + snapshot.World.GeographicNodeCount)
+                .AppendLine("module_instances=" + snapshot.World.ModuleInstanceCount)
+                .AppendLine("scaffold_modules=" + snapshot.World.ScaffoldModuleCount)
+                .ToString();
             var path = EditorUtility.SaveFilePanel("Export Project Realm diagnostics", "", "project-realm-framework.txt", "txt");
-            if (!string.IsNullOrEmpty(path))
-            {
-                File.WriteAllText(path, host.ExportDiagnostics());
-            }
+            if (!string.IsNullOrEmpty(path)) File.WriteAllText(path, text);
         }
     }
 
@@ -298,16 +244,11 @@ namespace ProjectRealm.Framework.Editor
         {
             var asset = AssetDatabase.LoadAssetAtPath<SQLiteAsset>(DefinitionAssetPath);
             if (asset == null)
-            {
                 throw new BuildFailedException(
                     "Development Definition DB is missing. Run: python3 tools/framework/build_runtime_definition.py");
-            }
-
             if ((report.summary.options & BuildOptions.Development) == 0)
-            {
                 throw new BuildFailedException(
                     "Commercial/Release build blocked: the active Definition is development-only and all authoritative capabilities are Scaffold/Unavailable.");
-            }
         }
     }
 }

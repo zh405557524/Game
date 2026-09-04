@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map
+namespace ProjectRealm.UnityPresentation.Map
 {
     public sealed class TerrainDebugSettings : ScriptableObject
     {

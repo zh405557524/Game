@@ -7,8 +7,8 @@
       "dependencies": {},
       "hash": "08248bd5884d8eb932a837aa56d4ff456daf913f"
     },
-    "com.projectrealm.simulation": {
-      "version": "file:com.projectrealm.simulation",
+    "com.projectrealm.framework": {
+      "version": "file:com.projectrealm.framework",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

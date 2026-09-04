@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map.Mountain
+namespace ProjectRealm.UnityPresentation.Map.Mountain
 {
     [Serializable]
     public sealed class MountainPeak

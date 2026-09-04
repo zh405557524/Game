@@ -12,12 +12,23 @@ namespace ProjectRealm.EditorTools
         [MenuItem("Project Realm/Tests/Run All EditMode Tests")]
         public static void RunAllEditModeTests()
         {
+            Run(TestMode.EditMode);
+        }
+
+        [MenuItem("Project Realm/Tests/Run All PlayMode Tests")]
+        public static void RunAllPlayModeTests()
+        {
+            Run(TestMode.PlayMode);
+        }
+
+        private static void Run(TestMode mode)
+        {
             testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
             callbacks = new ProjectRealmTestCallbacks();
             testRunnerApi.RegisterCallbacks(callbacks);
             testRunnerApi.Execute(new ExecutionSettings(new Filter
             {
-                testMode = TestMode.EditMode
+                testMode = mode
             }));
         }
 
@@ -25,13 +36,13 @@ namespace ProjectRealm.EditorTools
         {
             public void RunStarted(ITestAdaptor testsToRun)
             {
-                Debug.Log($"Project Realm EditMode test run started: {testsToRun.TestCaseCount} test(s).");
+                Debug.Log($"Project Realm test run started: {testsToRun.TestCaseCount} test(s).");
             }
 
             public void RunFinished(ITestResultAdaptor result)
             {
                 Debug.Log(
-                    $"Project Realm EditMode tests finished: {result.PassCount} passed, " +
+                    $"Project Realm tests finished: {result.PassCount} passed, " +
                     $"{result.FailCount} failed, {result.SkipCount} skipped, " +
                     $"{result.InconclusiveCount} inconclusive.");
             }
@@ -44,7 +55,7 @@ namespace ProjectRealm.EditorTools
             {
                 if (result.FailCount > 0)
                 {
-                    Debug.LogError($"EditMode test failed: {result.FullName}\n{result.Message}\n{result.StackTrace}");
+                    Debug.LogError($"Project Realm test failed: {result.FullName}\n{result.Message}\n{result.StackTrace}");
                 }
             }
         }

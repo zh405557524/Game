@@ -1,0 +1,22 @@
+{
+  "name": "ProjectRealm.Bootstrap",
+  "rootNamespace": "ProjectRealm.Bootstrap",
+  "references": [
+    "ProjectRealm.Foundation",
+    "ProjectRealm.Framework",
+    "ProjectRealm.SystemServer",
+    "ProjectRealm.Persistence.Sqlite",
+    "ProjectRealm.Presentation",
+    "ProjectRealm.UnityAdapter",
+    "Gilzoide.SqliteNet"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

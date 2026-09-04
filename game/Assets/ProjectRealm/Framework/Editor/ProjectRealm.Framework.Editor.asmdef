@@ -2,9 +2,9 @@
   "name": "ProjectRealm.Framework.Editor",
   "rootNamespace": "ProjectRealm.Framework.Editor",
   "references": [
-    "ProjectRealm.Application",
-    "ProjectRealm.Domain",
-    "ProjectRealm.UnityFramework",
+    "ProjectRealm.Foundation",
+    "ProjectRealm.Framework",
+    "ProjectRealm.Bootstrap",
     "Gilzoide.SqliteNet"
   ],
   "includePlatforms": [

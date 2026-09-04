@@ -1,0 +1,17 @@
+{
+  "name": "ProjectRealm.UnityAdapter",
+  "rootNamespace": "ProjectRealm.UnityAdapter",
+  "references": [
+    "ProjectRealm.Foundation",
+    "ProjectRealm.Framework"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

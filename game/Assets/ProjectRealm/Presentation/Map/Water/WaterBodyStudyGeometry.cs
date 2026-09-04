@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ProjectRealm.Presentation.Map.Water
+namespace ProjectRealm.UnityPresentation.Map.Water
 {
     public sealed class WaterStudyField
     {

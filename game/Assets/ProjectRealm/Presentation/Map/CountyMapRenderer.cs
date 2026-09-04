@@ -1,8 +1,9 @@
+using ProjectRealm.Foundation;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectRealm.Presentation.Map
+namespace ProjectRealm.UnityPresentation.Map
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]

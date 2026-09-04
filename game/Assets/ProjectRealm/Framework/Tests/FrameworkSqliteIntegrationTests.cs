@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using ProjectRealm.Application;
-using ProjectRealm.Domain;
-using ProjectRealm.Infrastructure.Sqlite;
+using ProjectRealm.Foundation;
+using ProjectRealm.Framework;
+using ProjectRealm.Persistence.Sqlite;
+using ProjectRealm.SystemServer;
+using ProjectRealm.World;
 using SQLite;
 using UnityEngine;
 
@@ -51,54 +53,77 @@ namespace ProjectRealm.Framework.Tests
         public void NationwideScaffoldTickPersistsReloadsAndContinuesDeterministically()
         {
             var definitionStore = LoadDefinitionStore();
-            var saveStore = new SqliteSaveGameStore(_temporaryRoot);
-            var bootstrapper = new WorldBootstrapper(definitionStore, saveStore);
-            var saveId = new StableId("integration-save");
-            var runtime = bootstrapper.StartNewWorld(new WorldBootstrapRequest(
-                saveId,
-                new StableId("MING1628"),
-                new WorldSeed(1628)));
+            var reloadRoot = Path.Combine(_temporaryRoot, "reload");
+            var reloadStore = new SqliteSaveGameStore(reloadRoot);
+            var reloadedServer = CreateServer(definitionStore, reloadStore);
+            reloadedServer.Start();
 
-            var firstTick = runtime.Advance(new AdvanceRequest(AdvanceUnit.Day));
-            Assert.That(firstTick.Committed, Is.True, firstTick.FailureReason);
-            Assert.That(runtime.ModuleRegistry.Instances, Has.Count.EqualTo(14307));
-            Assert.That(firstTick.ModuleResults, Has.Count.EqualTo(14307));
-            Assert.That(firstTick.ModuleResults.All(result =>
-                result.ImplementationTier == ModuleImplementationTier.Scaffold &&
-                result.DataQuality == DataQuality.Unavailable), Is.True);
-            Assert.That(runtime.CommittedState.Records, Is.Empty);
+            var created = reloadedServer.Context.World.Create(
+                new NewRealmWorldRequest("integration-save", "MING1628", 1628));
+            Assert.That(created.Succeeded, Is.True, created.Error?.Message);
+            Assert.That(created.Value.ModuleInstanceCount, Is.EqualTo(14307));
+            Assert.That(created.Value.ScaffoldModuleCount, Is.EqualTo(14307));
 
-            runtime.Save();
-            Assert.That(File.Exists(saveStore.GetSavePath(saveId)), Is.True);
-            var reloaded = bootstrapper.LoadWorld(new LoadWorldRequest(saveId));
-            Assert.That(reloaded.CurrentStateHash, Is.EqualTo(runtime.CurrentStateHash));
-            Assert.That(reloaded.Clock.DayIndex, Is.EqualTo(runtime.Clock.DayIndex));
-            Assert.That(reloaded.ModuleRegistry.Instances, Has.Count.EqualTo(runtime.ModuleRegistry.Instances.Count));
+            var firstTick = reloadedServer.Context.Simulation.Advance(RealmAdvanceUnit.Day);
+            Assert.That(firstTick.Succeeded, Is.True, firstTick.Error?.Message);
+            Assert.That(firstTick.Value.Committed, Is.True, firstTick.Value.FailureReason);
+            Assert.That(firstTick.Value.ModuleResultCount, Is.EqualTo(14307));
+            Assert.That(firstTick.Value.DataQuality, Is.EqualTo(DataQuality.Unavailable.ToString()));
+            Assert.That(reloadedServer.Context.Saves.Save().Succeeded, Is.True);
+            Assert.That(reloadStore.Exists(new StableId("integration-save")), Is.True);
 
-            runtime.AdvanceOneDay();
-            reloaded.AdvanceOneDay();
-            Assert.That(reloaded.CurrentStateHash, Is.EqualTo(runtime.CurrentStateHash));
+            var saved = reloadedServer.Context.World.GetCurrent().Value;
+            Assert.That(reloadedServer.Context.World.Close().Succeeded, Is.True);
+            var loaded = reloadedServer.Context.Saves.Load("integration-save");
+            Assert.That(loaded.Succeeded, Is.True, loaded.Error?.Message);
+            Assert.That(loaded.Value.StateHash, Is.EqualTo(saved.StateHash));
+            Assert.That(loaded.Value.Tick, Is.EqualTo(saved.Tick));
+            var afterReload = reloadedServer.Context.Simulation.Advance(RealmAdvanceUnit.Day);
+            Assert.That(afterReload.Succeeded && afterReload.Value.Committed, Is.True, afterReload.Error?.Message);
+
+            var continuousStore = new SqliteSaveGameStore(Path.Combine(_temporaryRoot, "continuous"));
+            var continuousServer = CreateServer(definitionStore, continuousStore);
+            continuousServer.Start();
+            var continuousCreated = continuousServer.Context.World.Create(
+                new NewRealmWorldRequest("integration-save", "MING1628", 1628));
+            Assert.That(continuousCreated.Succeeded, Is.True, continuousCreated.Error?.Message);
+            Assert.That(continuousServer.Context.Simulation.Advance(RealmAdvanceUnit.Day).Value.Committed, Is.True);
+            var uninterrupted = continuousServer.Context.Simulation.Advance(RealmAdvanceUnit.Day);
+
+            Assert.That(uninterrupted.Succeeded && uninterrupted.Value.Committed, Is.True, uninterrupted.Error?.Message);
+            Assert.That(afterReload.Value.StateHash, Is.EqualTo(uninterrupted.Value.StateHash));
+            reloadedServer.Stop();
+            continuousServer.Stop();
         }
 
         [Test]
-        public void DiagnosticsQueryCannotAdvanceClockOrChangeHash()
+        public void DiagnosticsManagerCannotAdvanceClockOrChangeHash()
         {
-            var definitionStore = LoadDefinitionStore();
-            var saveStore = new SqliteSaveGameStore(_temporaryRoot);
-            var runtime = new WorldBootstrapper(definitionStore, saveStore).StartNewWorld(
-                new WorldBootstrapRequest(new StableId("diagnostics-save"), new StableId("MING1628"), new WorldSeed(1628)));
-            var beforeClock = runtime.Clock.TickSequence;
-            var beforeHash = runtime.CurrentStateHash;
+            var server = CreateServer(
+                LoadDefinitionStore(),
+                new SqliteSaveGameStore(Path.Combine(_temporaryRoot, "diagnostics")));
+            server.Start();
+            var created = server.Context.World.Create(
+                new NewRealmWorldRequest("diagnostics-save", "MING1628", 1628));
+            Assert.That(created.Succeeded, Is.True, created.Error?.Message);
+            var before = server.Context.World.GetCurrent().Value;
 
-            var query = new SimulationDiagnosticsQuery();
             for (var index = 0; index < 20; index++)
             {
-                var snapshot = query.Query(runtime, "MING1628", index % 3, 25);
-                Assert.That(snapshot.GeographicNodeCount, Is.GreaterThan(1168));
+                var diagnostics = server.Context.Diagnostics.Query("MING1628", index % 3, 25);
+                Assert.That(diagnostics.Succeeded, Is.True, diagnostics.Error?.Message);
+                Assert.That(diagnostics.Value.World.GeographicNodeCount, Is.GreaterThan(1168));
             }
 
-            Assert.That(runtime.Clock.TickSequence, Is.EqualTo(beforeClock));
-            Assert.That(runtime.CurrentStateHash, Is.EqualTo(beforeHash));
+            var after = server.Context.World.GetCurrent().Value;
+            Assert.That(after.Tick, Is.EqualTo(before.Tick));
+            Assert.That(after.StateHash, Is.EqualTo(before.StateHash));
+            server.Stop();
+        }
+
+        private static RealmSystemServer CreateServer(IWorldDefinitionStore definitions, ISaveGameStore saves)
+        {
+            return new RealmSystemServer(definitions, saves, new TestSceneNavigator());
         }
 
         private static SqliteWorldDefinitionStore LoadDefinitionStore()
@@ -112,6 +137,14 @@ namespace ProjectRealm.Framework.Tests
         private static WorldDefinition LoadDefinition()
         {
             return LoadDefinitionStore().LoadWorld(new StableId("MING1628"));
+        }
+
+        private sealed class TestSceneNavigator : IRealmSceneNavigator
+        {
+            public RealmResult ShowMainMenu() => RealmResult.Success();
+            public RealmResult ShowGameplay() => RealmResult.Success();
+            public RealmResult ShowFault(string message) => RealmResult.Success();
+            public RealmResult ExitApplication() => RealmResult.Success();
         }
     }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "com.projectrealm.framework",
+  "version": "0.2.0",
+  "displayName": "Project Realm Framework",
+  "description": "Android-inspired application framework around the deterministic Project Realm world simulation kernel.",
+  "unity": "6000.5",
+  "author": {
+    "name": "Project Realm"
+  }
+}

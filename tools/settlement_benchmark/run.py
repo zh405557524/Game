@@ -207,8 +207,11 @@ def main():
         "completed_local": datetime.now().astimezone().isoformat(),
         "benchmark_peak_rss_mib": usage.ru_maxrss / (1024**2 if sys.platform == "darwin" else 1024),
         "sdk": str(args.dotnet), "source_code_sha256": file_hash(project / "Program.cs"),
-        "domain_sources_sha256": {
-            p.name: file_hash(p) for p in sorted((ROOT / "game/Packages/com.projectrealm.simulation/Runtime/Domain").glob("*.cs"))
+        "foundation_sources_sha256": {
+            p.name: file_hash(p) for p in sorted((ROOT / "game/Packages/com.projectrealm.framework/Runtime/Foundation").glob("*.cs"))
+        },
+        "world_sources_sha256": {
+            p.name: file_hash(p) for p in sorted((ROOT / "game/Packages/com.projectrealm.framework/Runtime/World").glob("*.cs"))
         },
     }
     (output / "metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")

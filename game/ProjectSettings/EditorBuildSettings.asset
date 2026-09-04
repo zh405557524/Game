@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Runtime/00_Bootstrap.unity
+    guid: 1e9401b8a0de5415d9d253ee168ee786
+  - enabled: 1
+    path: Assets/Scenes/Runtime/10_MainMenu.unity
+    guid: d10a929cca32c43cab217637e3a77e55
+  - enabled: 1
+    path: Assets/Scenes/Runtime/20_Gameplay.unity
+    guid: c46304f98e5fe476b9a094a81de7a494
+  - enabled: 1
     path: Assets/Scenes/Debug/Map/90_Integration/CountyMapPrototype/CountyMapPrototype.unity
     guid: abed279c2bc2f4b77b1ae8c02f785643
   - enabled: 1

@@ -1,0 +1,17 @@
+{
+  "name": "ProjectRealm.Framework",
+  "rootNamespace": "ProjectRealm.Framework",
+  "references": [
+    "ProjectRealm.Foundation",
+    "ProjectRealm.World"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

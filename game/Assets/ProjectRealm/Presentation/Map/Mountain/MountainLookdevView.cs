@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace ProjectRealm.Presentation.Map.Mountain
+namespace ProjectRealm.UnityPresentation.Map.Mountain
 {
     [RequireComponent(typeof(Camera))]
     public sealed class MountainLookdevView : MonoBehaviour

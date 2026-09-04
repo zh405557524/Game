@@ -1,6 +1,7 @@
+using ProjectRealm.Foundation;
 using System.Collections.Generic;
 using NUnit.Framework;
-using ProjectRealm.Presentation.Map;
+using ProjectRealm.UnityPresentation.Map;
 using UnityEngine;
 
 namespace ProjectRealm.Tests.Integration
